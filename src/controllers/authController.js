@@ -14,7 +14,7 @@ const cookieOptions = {
  * POST /api/auth/register
  */
 
-export const register = async (req, res) => {
+export const register = async (req, res, next) => {
   try {
     const { firstName, lastName, email, password } = req.body;
 
@@ -67,12 +67,12 @@ export const register = async (req, res) => {
  * Login user
  * POST /api/auth/login
  */
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    // Find user by email
-    const user = await User.findOne({ email });
+    // Find user by email (include password for comparison)
+    const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
       return res.status(401).json({
@@ -130,7 +130,7 @@ export const login = async (req, res) => {
  * Logout user
  * POST /api/auth/logout
  */
-export const logout = async (req, res) => {
+export const logout = async (req, res, next) => {
   try {
     const { refreshToken } = req.cookies;
 
@@ -159,7 +159,7 @@ export const logout = async (req, res) => {
  * Refresh access token
  * POST /api/auth/refresh
  */
-export const refreshAccessToken = async (req, res) => {
+export const refreshAccessToken = async (req, res, next) => {
   try {
     const { refreshToken } = req.cookies;
 
@@ -215,7 +215,7 @@ export const refreshAccessToken = async (req, res) => {
  * Get current user profile
  * GET /api/auth/me
  */
-export const getMe = async (req, res) => {
+export const getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id);
 

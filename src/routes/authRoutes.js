@@ -7,12 +7,14 @@ import {
   getMe,
 } from "../controllers/authController.js";
 import { protect } from "../middleware/auth.js";
+import { authLimiter, passwordResetLimiter } from "../config/security.js";
+import { validateRegistration, validateLogin } from "../middleware/validate.js";
 
 const router = express.Router();
 
-// Public routes
-router.post("/register", register);
-router.post("/login", login);
+// Public routes with rate limiting and validation
+router.post("/register", authLimiter, validateRegistration, register);
+router.post("/login", authLimiter, validateLogin, login);
 router.post("/logout", logout);
 router.post("/refresh", refreshAccessToken);
 
