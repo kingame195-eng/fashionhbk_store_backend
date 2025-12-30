@@ -68,7 +68,8 @@ export const validateRegistration = [
         throw new Error("Passwords do not match");
       }
       return true;
-    }),
+    })
+    .withMessage("Passwords do not match"),
 
   handleValidationErrors,
 ];

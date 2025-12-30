@@ -1,0 +1,2 @@
+{"timestamp":"2025-12-30T03:56:01.111Z","eventType":"SUSPICIOUS_ACTIVITY","ip":"::1","userAgent":"PostmanRuntime/7.39.1","method":"GET","path":"/api/auth/register","statusCode":404,"userId":"anonymous"}
+{"timestamp":"2025-12-30T04:06:55.967Z","eventType":"SUSPICIOUS_ACTIVITY","ip":"::1","userAgent":"PostmanRuntime/7.39.1","method":"GET","path":"/api/auth/register","statusCode":404,"userId":"anonymous"}
