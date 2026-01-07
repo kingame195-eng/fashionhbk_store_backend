@@ -53,6 +53,32 @@ export const protect = async (req, res, next) => {
 };
 
 /**
+ * Optional authentication - attaches user if token valid, continues without user if not
+ */
+export const optionalAuth = async (req, res, next) => {
+  try {
+    let token;
+
+    if (req.headers.authorization?.startsWith("Bearer")) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+
+    if (token) {
+      const decoded = verifyAccessToken(token);
+      const user = await User.findById(decoded.id);
+      if (user && user.isActive) {
+        req.user = user;
+      }
+    }
+
+    next();
+  } catch (error) {
+    // Token invalid or expired, continue without user
+    next();
+  }
+};
+
+/**
  * Authorize specific roles
  * @param {...string} roles - Allowed roles
  */

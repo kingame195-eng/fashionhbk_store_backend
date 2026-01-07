@@ -126,7 +126,7 @@ export const getProduct = asyncHandler(async (req, res, next) => {
   let product;
 
   if (identifier.match(/^[0-9a-fA-F]{24}$/)) {
-    product = await Product.findById(identifier);
+    product = await Product.findOne({ _id: identifier, isActive: true });
   }
 
   if (!product) {

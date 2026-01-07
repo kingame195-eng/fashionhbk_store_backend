@@ -5,13 +5,7 @@ import cookieParser from "cookie-parser";
 import connectDB from "./config/database.js";
 import routes from "./routes/index.js";
 import { corsOptions } from "./config/cors.js";
-import {
-  helmetConfig,
-  generalLimiter,
-  mongoSanitizeConfig,
-  xssCleanConfig,
-  hppConfig,
-} from "./config/security.js";
+import { helmetConfig, mongoSanitizeConfig, xssCleanConfig, hppConfig } from "./config/security.js";
 import { globalErrorHandler } from "./middleware/errorHandler.js";
 import { securityAuditMiddleware } from "./utils/securityLogger.js";
 
@@ -38,10 +32,7 @@ app.use(helmetConfig);
 // 2. CORS - Handle cross-origin requests
 app.use(cors(corsOptions));
 
-// 3. Rate limiting - Prevent brute force attacks
-app.use("/api", generalLimiter);
-
-// 4. Body parsers with size limits
+// 3. Body parsers with size limits
 app.use(express.json({ limit: "10kb" })); // Limit body size
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 

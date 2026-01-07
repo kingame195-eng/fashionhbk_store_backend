@@ -34,7 +34,7 @@ export const helmetConfig = helmet({
  */
 export const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10000, // Limit each IP to 100 requests per windowMs
+  max: 10000, // Limit each IP to 10000 requests per windowMs
   message: {
     success: false,
     message: "Too many requests from this IP, please try again after 15 minutes",
@@ -48,7 +48,7 @@ export const generalLimiter = rateLimit({
  */
 export const authLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 10000, // Limit each IP to 5 login attempts per hour
+  max: 10000, // Limit each IP to 10000 login attempts per hour
   message: {
     success: false,
     message: "Too many login attempts, please try again after an hour",
@@ -129,9 +129,13 @@ export const mongoSanitizeConfig = (req, res, next) => {
  * Sanitizes user input to prevent XSS attacks
  * Compatible with Express 5
  * Note: Skip sanitization for certain fields to avoid breaking functionality
+ * Note: Only sanitize strings that look like potential XSS attacks (contain script tags, event handlers)
  */
 const sanitizeXSS = (obj, skipFields = ["email", "password", "confirmPassword"]) => {
   if (obj === null || typeof obj !== "object") return obj;
+
+  // Pattern to detect potential XSS attacks
+  const xssPattern = /<script|javascript:|on\w+\s*=|<iframe|<embed|<object/i;
 
   for (const key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
@@ -140,13 +144,11 @@ const sanitizeXSS = (obj, skipFields = ["email", "password", "confirmPassword"])
         continue;
       }
       if (typeof obj[key] === "string") {
-        // Basic XSS sanitization - escape HTML entities
-        obj[key] = obj[key]
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#x27;");
+        // Only sanitize if it looks like a potential XSS attack
+        if (xssPattern.test(obj[key])) {
+          obj[key] = obj[key].replace(/</g, "&lt;").replace(/>/g, "&gt;");
+          console.warn(`XSS attempt detected and sanitized in field: ${key}`);
+        }
       } else if (typeof obj[key] === "object" && obj[key] !== null) {
         sanitizeXSS(obj[key], skipFields);
       }
