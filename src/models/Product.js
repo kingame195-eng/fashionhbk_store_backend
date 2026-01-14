@@ -415,6 +415,9 @@ productSchema.methods.reduceStock = async function (quantity, size, color) {
   }
 };
 
+// Add text index for search functionality
+productSchema.index({ name: "text", description: "text", brand: "text" });
+
 const Product = mongoose.model("Product", productSchema);
 
 export default Product;
