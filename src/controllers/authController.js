@@ -22,9 +22,10 @@ export const register = asyncHandler(async (req, res, next) => {
   // Check if user already exists
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-    return res.status(400).json({
+    return res.status(409).json({
       success: false,
-      message: "User with this email already exists",
+      message: "This email address is already registered. Please sign in or use a different email.",
+      code: "EMAIL_EXISTS",
     });
   }
 
@@ -48,7 +49,7 @@ export const register = asyncHandler(async (req, res, next) => {
 
   res.status(201).json({
     success: true,
-    message: "User registered successfully",
+    message: "Welcome! Your account has been created successfully.",
     data: {
       user: user.toJSON(),
       accessToken,
@@ -69,15 +70,17 @@ export const login = asyncHandler(async (req, res, next) => {
   if (!user) {
     return res.status(401).json({
       success: false,
-      message: "Invalid email or password",
+      message: "The email or password you entered is incorrect. Please try again.",
+      code: "INVALID_CREDENTIALS",
     });
   }
 
   // Check if user is active
   if (!user.isActive) {
-    return res.status(401).json({
+    return res.status(403).json({
       success: false,
-      message: "Account is deactivated. Please contact support.",
+      message: "Your account has been suspended. Please contact our support team for assistance.",
+      code: "ACCOUNT_SUSPENDED",
     });
   }
 
@@ -86,7 +89,8 @@ export const login = asyncHandler(async (req, res, next) => {
   if (!isPasswordValid) {
     return res.status(401).json({
       success: false,
-      message: "Invalid email or password",
+      message: "The email or password you entered is incorrect. Please try again.",
+      code: "INVALID_CREDENTIALS",
     });
   }
 
@@ -102,7 +106,7 @@ export const login = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "Login successful",
+    message: "Welcome back! You have successfully signed in.",
     data: {
       user: user.toJSON(),
       accessToken,
@@ -131,7 +135,7 @@ export const logout = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "Logout successful",
+    message: "You have been successfully signed out. See you again soon!",
   });
 });
 
@@ -146,7 +150,8 @@ export const refreshAccessToken = asyncHandler(async (req, res, next) => {
   if (!refreshToken) {
     return res.status(401).json({
       success: false,
-      message: "Refresh token not found. Please login again.",
+      message: "Your session has expired. Please sign in again to continue.",
+      code: "SESSION_EXPIRED",
     });
   }
 
@@ -157,7 +162,8 @@ export const refreshAccessToken = asyncHandler(async (req, res, next) => {
   } catch (error) {
     return res.status(401).json({
       success: false,
-      message: "Invalid or expired refresh token",
+      message: "Your session has expired. Please sign in again to continue.",
+      code: "TOKEN_EXPIRED",
     });
   }
 
@@ -170,7 +176,8 @@ export const refreshAccessToken = asyncHandler(async (req, res, next) => {
   if (!user) {
     return res.status(401).json({
       success: false,
-      message: "Invalid refresh token",
+      message: "Your session is no longer valid. Please sign in again.",
+      code: "INVALID_SESSION",
     });
   }
 
@@ -202,7 +209,8 @@ export const getMe = asyncHandler(async (req, res, next) => {
   if (!user) {
     return res.status(404).json({
       success: false,
-      message: "User not found",
+      message: "We couldn't find your account. Please try signing in again.",
+      code: "USER_NOT_FOUND",
     });
   }
 
