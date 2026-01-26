@@ -31,8 +31,13 @@ const cartSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
-      unique: true,
+      default: null,
+    },
+    // Session ID for guest carts (when user is not logged in)
+    sessionId: {
+      type: String,
+      default: null,
+      index: true,
     },
     items: [cartItemSchema],
     totalItems: {
@@ -43,11 +48,29 @@ const cartSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    // Coupon support
+    coupon: {
+      type: String,
+      default: null,
+    },
+    discount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
   }
 );
+
+// Ensure either user or sessionId is present
+cartSchema.pre("validate", function (next) {
+  if (!this.user && !this.sessionId) {
+    next(new Error("Cart must have either a user or sessionId"));
+  } else {
+    next();
+  }
+});
 
 // Calculate totals before saving
 cartSchema.pre("save", function (next) {

@@ -1,7 +1,10 @@
-const allowedOrigins = [
-  process.env.CLIENT_URL || "http://localhost:3000",
-  process.env.CLIENT_URL_2,
-  // Development origins - all common ports
+/**
+ * CORS Configuration
+ * Separated for development and production environments
+ */
+
+// Development origins - only used in non-production
+const devOrigins = [
   "http://localhost:3000",
   "http://localhost:3001",
   "http://localhost:3002",
@@ -11,14 +14,21 @@ const allowedOrigins = [
   "http://127.0.0.1:3001",
   "http://127.0.0.1:5173",
   "http://127.0.0.1:5174",
-].filter(Boolean); // Remove undefined values
+];
+
+// Production origins - always allowed
+const prodOrigins = [process.env.CLIENT_URL, process.env.CLIENT_URL_2].filter(Boolean);
+
+// Combine origins based on environment
+const allowedOrigins =
+  process.env.NODE_ENV === "production" ? prodOrigins : [...prodOrigins, ...devOrigins];
 
 export const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, curl, etc.)
+    // Allow requests with no origin (mobile apps, curl, Postman, etc.)
     if (!origin) return callback(null, true);
 
-    // In development, allow all localhost origins
+    // In development, also allow any localhost origin dynamically
     if (process.env.NODE_ENV !== "production") {
       if (origin.includes("localhost") || origin.includes("127.0.0.1")) {
         return callback(null, true);
@@ -42,6 +52,7 @@ export const corsOptions = {
     "Accept",
     "Origin",
     "X-CSRF-Token",
+    "X-Cart-Session",
   ],
   exposedHeaders: ["X-Total-Count", "X-Page-Count"],
   maxAge: 86400, // Cache preflight for 24 hours

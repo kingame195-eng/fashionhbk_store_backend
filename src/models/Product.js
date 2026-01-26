@@ -278,7 +278,8 @@ const productSchema = new mongoose.Schema(
 );
 
 // INDEXES for Performance
-productSchema.index({ name: "text", description: "text", tags: "text" });
+// Text index for search (only ONE text index allowed per collection)
+productSchema.index({ name: "text", description: "text", tags: "text", brand: "text" });
 productSchema.index({ price: 1, category: 1 });
 productSchema.index({ createdAt: -1 });
 productSchema.index({ "ratings.average": -1 });
@@ -416,7 +417,7 @@ productSchema.methods.reduceStock = async function (quantity, size, color) {
 };
 
 // Add text index for search functionality
-productSchema.index({ name: "text", description: "text", brand: "text" });
+// Note: Only ONE text index allowed per collection - merged with indexes above
 
 const Product = mongoose.model("Product", productSchema);
 
