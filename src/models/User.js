@@ -76,6 +76,18 @@ const userSchema = new mongoose.Schema(
       type: Date,
       select: false,
     },
+    wishlist: [
+      {
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+        },
+        addedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   {
     timestamps: true, // Adds createdAt and updatedAt

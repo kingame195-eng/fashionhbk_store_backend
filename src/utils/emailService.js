@@ -236,9 +236,265 @@ export const sendWelcomeEmail = async (email, name) => {
   return sendEmail({ to: email, subject, html, text: `Hi ${name}! Welcome to Fashion Store.` });
 };
 
+/**
+ * Gửi email xác nhận thanh toán
+ * @param {string} email - Email người nhận
+ * @param {Object} data - { orderNumber, amount, paymentMethod }
+ */
+export const sendPaymentConfirmationEmail = async (email, data) => {
+  const { orderNumber, amount, paymentMethod } = data;
+  const subject = `Payment Confirmed - Order #${orderNumber}`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: #1a1a1a; color: #fff; padding: 20px; text-align: center; }
+    .content { padding: 30px; background: #f9f9f9; }
+    .success { color: #28a745; font-size: 24px; }
+    .details { background: #fff; padding: 20px; margin: 20px 0; border-radius: 8px; }
+    .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Fashion Store</h1>
+    </div>
+    <div class="content">
+      <p class="success">✓ Payment Successful!</p>
+      <div class="details">
+        <p><strong>Order Number:</strong> ${orderNumber}</p>
+        <p><strong>Amount Paid:</strong> $${amount}</p>
+        <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+        <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+      </div>
+      <p>Your order is now being processed. We'll notify you when it ships.</p>
+    </div>
+    <div class="footer">
+      <p>&copy; ${new Date().getFullYear()} Fashion Store. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+  return sendEmail({
+    to: email,
+    subject,
+    html,
+    text: `Payment confirmed for order #${orderNumber}. Amount: $${amount}`,
+  });
+};
+
+/**
+ * Gửi email hướng dẫn chuyển khoản
+ * @param {string} email - Email người nhận
+ * @param {Object} data - { orderNumber, amount, transferReference, bankInfo, expiresAt }
+ */
+export const sendBankTransferEmail = async (email, data) => {
+  const { orderNumber, amount, transferReference, bankInfo, expiresAt } = data;
+  const subject = `Bank Transfer Instructions - Order #${orderNumber}`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: #1a1a1a; color: #fff; padding: 20px; text-align: center; }
+    .content { padding: 30px; background: #f9f9f9; }
+    .bank-info { background: #fff; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #c9a962; }
+    .warning { background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Fashion Store</h1>
+    </div>
+    <div class="content">
+      <h2>Bank Transfer Instructions</h2>
+      <p>Please complete your payment using the following details:</p>
+      
+      <div class="bank-info">
+        <p><strong>Bank Name:</strong> ${bankInfo.bankName}</p>
+        <p><strong>Account Number:</strong> ${bankInfo.accountNumber}</p>
+        <p><strong>Account Name:</strong> ${bankInfo.accountName}</p>
+        <p><strong>Branch:</strong> ${bankInfo.branch}</p>
+        <p><strong>Amount:</strong> $${amount}</p>
+        <p><strong>Transfer Reference:</strong> <code>${transferReference}</code></p>
+      </div>
+      
+      <div class="warning">
+        ⚠️ <strong>Important:</strong> Please include the transfer reference in your payment description.
+        <br>Payment must be completed before: ${new Date(expiresAt).toLocaleString()}
+      </div>
+    </div>
+    <div class="footer">
+      <p>&copy; ${new Date().getFullYear()} Fashion Store. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+  return sendEmail({
+    to: email,
+    subject,
+    html,
+    text: `Bank Transfer for Order #${orderNumber}. Amount: $${amount}. Reference: ${transferReference}`,
+  });
+};
+
+/**
+ * Gửi email cập nhật trạng thái đơn hàng
+ * @param {string} email - Email người nhận
+ * @param {Object} data - { orderNumber, status, trackingNumber, estimatedDelivery }
+ */
+export const sendOrderStatusEmail = async (email, data) => {
+  const { orderNumber, status, trackingNumber, estimatedDelivery } = data;
+
+  const statusMessages = {
+    processing: "Your order is being processed",
+    shipped: "Your order has been shipped!",
+    out_for_delivery: "Your order is out for delivery",
+    delivered: "Your order has been delivered",
+    cancelled: "Your order has been cancelled",
+  };
+
+  const subject = `Order Update - #${orderNumber} ${statusMessages[status] || status}`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: #1a1a1a; color: #fff; padding: 20px; text-align: center; }
+    .content { padding: 30px; background: #f9f9f9; }
+    .status-box { background: #fff; padding: 20px; margin: 20px 0; border-radius: 8px; text-align: center; }
+    .status { font-size: 18px; color: #c9a962; text-transform: uppercase; }
+    .tracking { background: #e9ecef; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Fashion Store</h1>
+    </div>
+    <div class="content">
+      <div class="status-box">
+        <p>Order #${orderNumber}</p>
+        <p class="status">${statusMessages[status] || status}</p>
+      </div>
+      
+      ${
+        trackingNumber
+          ? `
+      <div class="tracking">
+        <p><strong>Tracking Number:</strong> ${trackingNumber}</p>
+        ${estimatedDelivery ? `<p><strong>Estimated Delivery:</strong> ${new Date(estimatedDelivery).toLocaleDateString()}</p>` : ""}
+      </div>
+      `
+          : ""
+      }
+      
+      <p>Thank you for shopping with Fashion Store!</p>
+    </div>
+    <div class="footer">
+      <p>&copy; ${new Date().getFullYear()} Fashion Store. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+  return sendEmail({
+    to: email,
+    subject,
+    html,
+    text: `Order #${orderNumber} update: ${statusMessages[status] || status}`,
+  });
+};
+
+/**
+ * Gửi email thông báo hoàn tiền
+ * @param {string} email - Email người nhận
+ * @param {Object} data - { orderNumber, amount, approved, adminNotes }
+ */
+export const sendRefundEmail = async (email, data) => {
+  const { orderNumber, amount, approved, adminNotes } = data;
+  const subject = `Refund ${approved ? "Approved" : "Rejected"} - Order #${orderNumber}`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: #1a1a1a; color: #fff; padding: 20px; text-align: center; }
+    .content { padding: 30px; background: #f9f9f9; }
+    .result { font-size: 24px; text-align: center; padding: 20px; }
+    .approved { color: #28a745; }
+    .rejected { color: #dc3545; }
+    .details { background: #fff; padding: 20px; margin: 20px 0; border-radius: 8px; }
+    .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Fashion Store</h1>
+    </div>
+    <div class="content">
+      <p class="result ${approved ? "approved" : "rejected"}">
+        ${approved ? "✓ Refund Approved" : "✗ Refund Rejected"}
+      </p>
+      
+      <div class="details">
+        <p><strong>Order Number:</strong> ${orderNumber}</p>
+        <p><strong>Amount:</strong> $${amount}</p>
+        ${adminNotes ? `<p><strong>Note:</strong> ${adminNotes}</p>` : ""}
+      </div>
+      
+      ${
+        approved
+          ? "<p>The refund will be processed within 5-7 business days.</p>"
+          : "<p>If you have questions about this decision, please contact our support team.</p>"
+      }
+    </div>
+    <div class="footer">
+      <p>&copy; ${new Date().getFullYear()} Fashion Store. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+  return sendEmail({
+    to: email,
+    subject,
+    html,
+    text: `Refund ${approved ? "approved" : "rejected"} for order #${orderNumber}. Amount: $${amount}`,
+  });
+};
+
 export default {
   sendEmail,
   sendPasswordResetEmail,
   sendOrderConfirmationEmail,
   sendWelcomeEmail,
+  sendPaymentConfirmationEmail,
+  sendBankTransferEmail,
+  sendOrderStatusEmail,
+  sendRefundEmail,
 };

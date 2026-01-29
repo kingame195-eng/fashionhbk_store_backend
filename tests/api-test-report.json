@@ -1,0 +1,3564 @@
+{
+  "timestamp": "2026-01-28T17:23:07.395Z",
+  "baseUrl": "http://localhost:5000/api",
+  "summary": {
+    "total": 65,
+    "passed": 65,
+    "failed": 0,
+    "successRate": "100.0%",
+    "duration": "2.08 seconds"
+  },
+  "tests": [
+    {
+      "name": "Health Check - API is healthy",
+      "passed": true,
+      "duration": 61,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "message": "API is healthy",
+        "timestamp": "2026-01-28T17:23:05.367Z"
+      }
+    },
+    {
+      "name": "Root Endpoint - API is running",
+      "passed": true,
+      "duration": 6,
+      "expected": "Status 200",
+      "actual": "Status 200",
+      "response": {}
+    },
+    {
+      "name": "404 Not Found - Invalid route",
+      "passed": true,
+      "duration": 4,
+      "expected": "Status 404, success: false",
+      "actual": "Status 404, success: false",
+      "response": {
+        "success": false,
+        "message": "Route not found"
+      }
+    },
+    {
+      "name": "Register - Missing required fields (400)",
+      "passed": true,
+      "duration": 8,
+      "expected": "Status 400, success: false",
+      "actual": "Status 400, success: false",
+      "response": {
+        "success": false,
+        "message": "Please enter your first name",
+        "code": "VALIDATION_ERROR",
+        "errors": [
+          {
+            "field": "firstName",
+            "message": "Please enter your first name"
+          },
+          {
+            "field": "firstName",
+            "message": "First name must be between 2 and 50 characters"
+          },
+          {
+            "field": "firstName",
+            "message": "First name can only contain letters, spaces, and hyphens"
+          },
+          {
+            "field": "lastName",
+            "message": "Please enter your last name"
+          },
+          {
+            "field": "lastName",
+            "message": "Last name must be between 2 and 50 characters"
+          },
+          {
+            "field": "lastName",
+            "message": "Last name can only contain letters, spaces, and hyphens"
+          },
+          {
+            "field": "password",
+            "message": "Please create a password"
+          },
+          {
+            "field": "password",
+            "message": "Password must be between 8 and 128 characters"
+          },
+          {
+            "field": "password",
+            "message": "Password must include at least one uppercase letter, one lowercase letter, and one number"
+          },
+          {
+            "field": "confirmPassword",
+            "message": "Please confirm your password"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Register - Invalid email format (400)",
+      "passed": true,
+      "duration": 5,
+      "expected": "Status 400, success: false",
+      "actual": "Status 400, success: false",
+      "response": {
+        "success": false,
+        "message": "Please enter a valid email address (e.g., name@example.com)",
+        "code": "VALIDATION_ERROR",
+        "errors": [
+          {
+            "field": "email",
+            "message": "Please enter a valid email address (e.g., name@example.com)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Register - Password mismatch (400)",
+      "passed": true,
+      "duration": 4,
+      "expected": "Status 400, success: false",
+      "actual": "Status 400, success: false",
+      "response": {
+        "success": false,
+        "message": "Passwords do not match. Please try again.",
+        "code": "VALIDATION_ERROR",
+        "errors": [
+          {
+            "field": "confirmPassword",
+            "message": "Passwords do not match. Please try again."
+          }
+        ]
+      }
+    },
+    {
+      "name": "Register - New user success (201)",
+      "passed": true,
+      "duration": 246,
+      "expected": "Status 201, success: true",
+      "actual": "Status 201, success: true",
+      "response": {
+        "success": true,
+        "message": "Welcome! Your account has been created successfully.",
+        "data": {
+          "user": {
+            "firstName": "Test",
+            "lastName": "User",
+            "email": "testuser1769620985410@example.com",
+            "role": "user",
+            "isActive": true,
+            "avatar": null,
+            "phone": null,
+            "_id": "697a45f9fb3125b9657c75c7",
+            "addresses": [],
+            "wishlist": [],
+            "createdAt": "2026-01-28T17:23:05.415Z",
+            "updatedAt": "2026-01-28T17:23:05.652Z"
+          },
+          "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2E0NWY5ZmIzMTI1Yjk2NTdjNzVjNyIsImVtYWlsIjoidGVzdHVzZXIxNzY5NjIwOTg1NDEwQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Njk2MjA5ODUsImV4cCI6MTc2OTYyMTg4NX0.--VNLnRhH-MgQxHeH7iENXv0HxytpMsM2eUNT5CXto4"
+        }
+      }
+    },
+    {
+      "name": "Login - Invalid credentials (401)",
+      "passed": true,
+      "duration": 345,
+      "expected": "Status 401, success: false",
+      "actual": "Status 401, success: false",
+      "response": {
+        "success": false,
+        "message": "The email or password you entered is incorrect. Please try again.",
+        "code": "INVALID_CREDENTIALS"
+      }
+    },
+    {
+      "name": "Login - Non-existent user (401)",
+      "passed": true,
+      "duration": 6,
+      "expected": "Status 401, success: false",
+      "actual": "Status 401, success: false",
+      "response": {
+        "success": false,
+        "message": "The email or password you entered is incorrect. Please try again.",
+        "code": "INVALID_CREDENTIALS"
+      }
+    },
+    {
+      "name": "Login - Valid credentials (200)",
+      "passed": true,
+      "duration": 323,
+      "expected": "Status 200, success: true, accessToken exists",
+      "actual": "Status 200, success: true, accessToken: exists",
+      "response": {
+        "success": true,
+        "message": "Welcome back! You have successfully signed in.",
+        "data": {
+          "user": {
+            "_id": "697a43f40461e7049747c21d",
+            "firstName": "Updated",
+            "lastName": "Name",
+            "email": "admin@example.com",
+            "role": "admin",
+            "isActive": true,
+            "avatar": null,
+            "phone": "0987654321",
+            "addresses": [],
+            "wishlist": [],
+            "createdAt": "2026-01-28T17:14:28.028Z",
+            "updatedAt": "2026-01-28T17:23:06.325Z"
+          },
+          "accessToken": "[HIDDEN]"
+        }
+      }
+    },
+    {
+      "name": "Get Me - Without token (401)",
+      "passed": true,
+      "duration": 2,
+      "expected": "Status 401, success: false",
+      "actual": "Status 401, success: false",
+      "response": {
+        "success": false,
+        "message": "Not authorized - No token provided"
+      }
+    },
+    {
+      "name": "Get Me - Invalid token (401)",
+      "passed": true,
+      "duration": 3,
+      "expected": "Status 401, success: false",
+      "actual": "Status 401, success: false",
+      "response": {
+        "success": false,
+        "message": "Not authorized - Invalid token"
+      }
+    },
+    {
+      "name": "Get Me - With valid token (200)",
+      "passed": {
+        "_id": "697a43f40461e7049747c21d",
+        "firstName": "Updated",
+        "lastName": "Name",
+        "email": "admin@example.com",
+        "role": "admin",
+        "isActive": true,
+        "avatar": null,
+        "phone": "0987654321",
+        "addresses": [],
+        "wishlist": [],
+        "createdAt": "2026-01-28T17:14:28.028Z",
+        "updatedAt": "2026-01-28T17:23:06.325Z"
+      },
+      "duration": 7,
+      "expected": "Status 200, success: true, user data exists",
+      "actual": "Status 200, success: true, user: exists",
+      "response": {
+        "success": true,
+        "data": {
+          "user": {
+            "_id": "697a43f40461e7049747c21d",
+            "firstName": "Updated",
+            "lastName": "Name",
+            "email": "admin@example.com",
+            "role": "admin",
+            "isActive": true,
+            "avatar": null,
+            "phone": "0987654321",
+            "addresses": [],
+            "wishlist": [],
+            "createdAt": "2026-01-28T17:14:28.028Z",
+            "updatedAt": "2026-01-28T17:23:06.325Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "Refresh Token - Invalid token (401/403)",
+      "passed": true,
+      "duration": 3,
+      "expected": "Status 401 or 403, success: false",
+      "actual": "Status 401, success: false",
+      "response": {
+        "success": false,
+        "message": "Your session has expired. Please sign in again to continue.",
+        "code": "TOKEN_EXPIRED"
+      }
+    },
+    {
+      "name": "Forgot Password - Invalid email (400/404/429)",
+      "passed": true,
+      "duration": 2,
+      "expected": "Status 400, 404 or 429 (rate limited)",
+      "actual": "Status 429",
+      "response": {
+        "success": false,
+        "message": "Too many password reset attempts, please try again later"
+      }
+    },
+    {
+      "name": "Reset Password - Invalid token (400/429)",
+      "passed": true,
+      "duration": 2,
+      "expected": "Status 400 (invalid token) or 429 (rate limited), success: false",
+      "actual": "Status 429, success: false",
+      "response": {
+        "success": false,
+        "message": "Too many password reset attempts, please try again later"
+      }
+    },
+    {
+      "name": "Logout - Success (200)",
+      "passed": true,
+      "duration": 1,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "message": "You have been successfully signed out. See you again soon!"
+      }
+    },
+    {
+      "name": "Get All Products - Success (200)",
+      "passed": true,
+      "duration": 6,
+      "expected": "Status 200, success: true, products array",
+      "actual": "Status 200, success: true, products: 10",
+      "response": {
+        "success": true,
+        "data": {
+          "products": "[10 items]",
+          "pagination": {
+            "currentPage": 1,
+            "totalPages": 2,
+            "totalProducts": 15,
+            "limit": 10,
+            "hasNextPage": true,
+            "hasPrevPage": false
+          }
+        }
+      }
+    },
+    {
+      "name": "Get Products - With search query (200)",
+      "passed": true,
+      "duration": 9,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "data": {
+          "products": [
+            {
+              "_id": "695e8ca746b0f5242955752d",
+              "name": "Classic White Oxford Shirt",
+              "slug": "classic-white-oxford-shirt",
+              "description": "A timeless white oxford shirt crafted from premium cotton. Perfect for both casual and formal occasions with its crisp, clean finish.",
+              "shortDescription": "Premium cotton oxford shirt for versatile styling",
+              "brand": "Fashion Elite",
+              "price": 89.99,
+              "compareAtPrice": 120,
+              "currency": "USD",
+              "sku": "MEN-SHIRT-001",
+              "stock": 150,
+              "sizes": [
+                {
+                  "name": "S",
+                  "stock": 30,
+                  "_id": "695e8ca746b0f5242955752e"
+                },
+                {
+                  "name": "M",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f5242955752f"
+                },
+                {
+                  "name": "L",
+                  "stock": 50,
+                  "_id": "695e8ca746b0f52429557530"
+                },
+                {
+                  "name": "XL",
+                  "stock": 30,
+                  "_id": "695e8ca746b0f52429557531"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "White",
+                  "hexCode": "#FFFFFF",
+                  "stock": 75,
+                  "_id": "695e8ca746b0f52429557532"
+                },
+                {
+                  "name": "Light Blue",
+                  "hexCode": "#ADD8E6",
+                  "stock": 75,
+                  "_id": "695e8ca746b0f52429557533"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1617127365659-c47fa864d8bc",
+                  "alt": "Classic White Oxford Shirt",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1617127365659-c47fa864d8bc",
+              "category": "men",
+              "subcategory": "shirts",
+              "tags": [
+                "shirt",
+                "oxford",
+                "formal",
+                "casual",
+                "cotton"
+              ],
+              "isActive": true,
+              "isFeatured": true,
+              "isNewArrival": true,
+              "isOnSale": false,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.775Z",
+              "updatedAt": "2026-01-07T16:41:11.775Z",
+              "image": "https://images.unsplash.com/photo-1617127365659-c47fa864d8bc"
+            }
+          ],
+          "pagination": {
+            "currentPage": 1,
+            "totalPages": 1,
+            "totalProducts": 1,
+            "limit": 12,
+            "hasNextPage": false,
+            "hasPrevPage": false
+          }
+        }
+      }
+    },
+    {
+      "name": "Get Products - Filter by category (200)",
+      "passed": true,
+      "duration": 5,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "data": {
+          "products": [
+            {
+              "_id": "695e8ca746b0f5242955753d",
+              "name": "Slim Fit Denim Jeans",
+              "slug": "slim-fit-denim-jeans",
+              "description": "Modern slim fit jeans made from stretch denim for ultimate comfort. Features a classic five-pocket design with premium brass hardware.",
+              "shortDescription": "Comfortable stretch denim with slim fit",
+              "brand": "Urban Denim",
+              "price": 79.99,
+              "compareAtPrice": 110,
+              "currency": "USD",
+              "sku": "MEN-JEANS-001",
+              "stock": 200,
+              "sizes": [
+                {
+                  "name": "S",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f5242955753e"
+                },
+                {
+                  "name": "M",
+                  "stock": 60,
+                  "_id": "695e8ca746b0f5242955753f"
+                },
+                {
+                  "name": "L",
+                  "stock": 60,
+                  "_id": "695e8ca746b0f52429557540"
+                },
+                {
+                  "name": "XL",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f52429557541"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "Indigo",
+                  "hexCode": "#4B0082",
+                  "stock": 100,
+                  "_id": "695e8ca746b0f52429557542"
+                },
+                {
+                  "name": "Black",
+                  "hexCode": "#000000",
+                  "stock": 100,
+                  "_id": "695e8ca746b0f52429557543"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+                  "alt": "Slim Fit Denim Jeans",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+              "category": "men",
+              "subcategory": "jeans",
+              "tags": [
+                "jeans",
+                "denim",
+                "slim fit",
+                "casual"
+              ],
+              "isActive": true,
+              "isFeatured": false,
+              "isNewArrival": true,
+              "isOnSale": false,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.777Z",
+              "updatedAt": "2026-01-07T16:41:11.777Z",
+              "image": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35"
+            },
+            {
+              "_id": "695e8ca746b0f52429557568",
+              "name": "Wool Blend Blazer",
+              "slug": "wool-blend-blazer",
+              "description": "Sophisticated wool blend blazer with satin lining. Features classic notch lapels and functional button cuffs for a polished professional look.",
+              "shortDescription": "Classic wool blend with satin lining",
+              "brand": "Executive Style",
+              "price": 249.99,
+              "compareAtPrice": 329.99,
+              "currency": "USD",
+              "sku": "MEN-BLAZ-001",
+              "stock": 90,
+              "sizes": [
+                {
+                  "name": "S",
+                  "stock": 20,
+                  "_id": "695e8ca746b0f52429557569"
+                },
+                {
+                  "name": "M",
+                  "stock": 30,
+                  "_id": "695e8ca746b0f5242955756a"
+                },
+                {
+                  "name": "L",
+                  "stock": 25,
+                  "_id": "695e8ca746b0f5242955756b"
+                },
+                {
+                  "name": "XL",
+                  "stock": 15,
+                  "_id": "695e8ca746b0f5242955756c"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "Charcoal",
+                  "hexCode": "#36454F",
+                  "stock": 45,
+                  "_id": "695e8ca746b0f5242955756d"
+                },
+                {
+                  "name": "Navy",
+                  "hexCode": "#000080",
+                  "stock": 45,
+                  "_id": "695e8ca746b0f5242955756e"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1507679799987-c73779587ccf",
+                  "alt": "Wool Blend Blazer",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1507679799987-c73779587ccf",
+              "category": "men",
+              "subcategory": "blazers",
+              "tags": [
+                "blazer",
+                "wool",
+                "formal",
+                "business"
+              ],
+              "isActive": true,
+              "isFeatured": true,
+              "isNewArrival": false,
+              "isOnSale": false,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.777Z",
+              "updatedAt": "2026-01-07T16:41:11.777Z",
+              "image": "https://images.unsplash.com/photo-1507679799987-c73779587ccf"
+            },
+            {
+              "_id": "695e8ca746b0f5242955752d",
+              "name": "Classic White Oxford Shirt",
+              "slug": "classic-white-oxford-shirt",
+              "description": "A timeless white oxford shirt crafted from premium cotton. Perfect for both casual and formal occasions with its crisp, clean finish.",
+              "shortDescription": "Premium cotton oxford shirt for versatile styling",
+              "brand": "Fashion Elite",
+              "price": 89.99,
+              "compareAtPrice": 120,
+              "currency": "USD",
+              "sku": "MEN-SHIRT-001",
+              "stock": 150,
+              "sizes": [
+                {
+                  "name": "S",
+                  "stock": 30,
+                  "_id": "695e8ca746b0f5242955752e"
+                },
+                {
+                  "name": "M",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f5242955752f"
+                },
+                {
+                  "name": "L",
+                  "stock": 50,
+                  "_id": "695e8ca746b0f52429557530"
+                },
+                {
+                  "name": "XL",
+                  "stock": 30,
+                  "_id": "695e8ca746b0f52429557531"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "White",
+                  "hexCode": "#FFFFFF",
+                  "stock": 75,
+                  "_id": "695e8ca746b0f52429557532"
+                },
+                {
+                  "name": "Light Blue",
+                  "hexCode": "#ADD8E6",
+                  "stock": 75,
+                  "_id": "695e8ca746b0f52429557533"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1617127365659-c47fa864d8bc",
+                  "alt": "Classic White Oxford Shirt",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1617127365659-c47fa864d8bc",
+              "category": "men",
+              "subcategory": "shirts",
+              "tags": [
+                "shirt",
+                "oxford",
+                "formal",
+                "casual",
+                "cotton"
+              ],
+              "isActive": true,
+              "isFeatured": true,
+              "isNewArrival": true,
+              "isOnSale": false,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.775Z",
+              "updatedAt": "2026-01-07T16:41:11.775Z",
+              "image": "https://images.unsplash.com/photo-1617127365659-c47fa864d8bc"
+            }
+          ],
+          "pagination": {
+            "currentPage": 1,
+            "totalPages": 1,
+            "totalProducts": 3,
+            "limit": 12,
+            "hasNextPage": false,
+            "hasPrevPage": false
+          }
+        }
+      }
+    },
+    {
+      "name": "Get Products - Price range filter (200)",
+      "passed": true,
+      "duration": 5,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "data": {
+          "products": [
+            {
+              "_id": "695e8ca746b0f52429557580",
+              "name": "Kids Denim Overall",
+              "slug": "kids-denim-overall",
+              "description": "Adorable denim overall for kids with adjustable straps. Made from soft stretch denim with fun embroidered details and multiple pockets.",
+              "shortDescription": "Soft stretch denim with embroidered details",
+              "brand": "Little Stars",
+              "price": 55.99,
+              "compareAtPrice": 75,
+              "currency": "USD",
+              "sku": "KIDS-OVER-001",
+              "stock": 80,
+              "sizes": [
+                {
+                  "name": "XS",
+                  "stock": 20,
+                  "_id": "695e8ca746b0f52429557581"
+                },
+                {
+                  "name": "S",
+                  "stock": 25,
+                  "_id": "695e8ca746b0f52429557582"
+                },
+                {
+                  "name": "M",
+                  "stock": 25,
+                  "_id": "695e8ca746b0f52429557583"
+                },
+                {
+                  "name": "L",
+                  "stock": 10,
+                  "_id": "695e8ca746b0f52429557584"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "Light Wash",
+                  "hexCode": "#87CEEB",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f52429557585"
+                },
+                {
+                  "name": "Dark Wash",
+                  "hexCode": "#191970",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f52429557586"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af",
+                  "alt": "Kids Denim Overall",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af",
+              "category": "kids",
+              "subcategory": "overalls",
+              "tags": [
+                "kids",
+                "denim",
+                "overall",
+                "casual"
+              ],
+              "isActive": true,
+              "isFeatured": false,
+              "isNewArrival": true,
+              "isOnSale": false,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.778Z",
+              "updatedAt": "2026-01-07T16:41:11.778Z",
+              "image": "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af"
+            },
+            {
+              "_id": "695e8ca746b0f52429557578",
+              "name": "Vintage Leather Belt",
+              "slug": "vintage-leather-belt",
+              "description": "Handcrafted vintage-style leather belt with antique brass buckle. Made from full-grain leather that ages beautifully over time.",
+              "shortDescription": "Full-grain leather with antique brass buckle",
+              "brand": "Artisan Leather",
+              "price": 59.99,
+              "compareAtPrice": 79.99,
+              "currency": "USD",
+              "sku": "ACC-BELT-001",
+              "stock": 120,
+              "sizes": [
+                {
+                  "name": "S",
+                  "stock": 30,
+                  "_id": "695e8ca746b0f52429557579"
+                },
+                {
+                  "name": "M",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f5242955757a"
+                },
+                {
+                  "name": "L",
+                  "stock": 35,
+                  "_id": "695e8ca746b0f5242955757b"
+                },
+                {
+                  "name": "XL",
+                  "stock": 15,
+                  "_id": "695e8ca746b0f5242955757c"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "Brown",
+                  "hexCode": "#8B4513",
+                  "stock": 60,
+                  "_id": "695e8ca746b0f5242955757d"
+                },
+                {
+                  "name": "Black",
+                  "hexCode": "#000000",
+                  "stock": 60,
+                  "_id": "695e8ca746b0f5242955757e"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9",
+                  "alt": "Vintage Leather Belt",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9",
+              "category": "accessories",
+              "subcategory": "belts",
+              "tags": [
+                "belt",
+                "leather",
+                "vintage",
+                "accessories"
+              ],
+              "isActive": true,
+              "isFeatured": false,
+              "isNewArrival": false,
+              "isOnSale": false,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.778Z",
+              "updatedAt": "2026-01-07T16:41:11.778Z",
+              "image": "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9"
+            },
+            {
+              "_id": "695e8ca746b0f52429557552",
+              "name": "Kids Rainbow Hoodie",
+              "slug": "kids-rainbow-hoodie",
+              "description": "Fun and colorful rainbow hoodie for kids. Made from soft organic cotton with a cozy fleece lining. Features a kangaroo pocket and adjustable hood.",
+              "shortDescription": "Soft organic cotton hoodie for kids",
+              "brand": "Little Stars",
+              "price": 45.99,
+              "compareAtPrice": 59.99,
+              "currency": "USD",
+              "sku": "KIDS-HOOD-001",
+              "stock": 100,
+              "sizes": [
+                {
+                  "name": "XS",
+                  "stock": 25,
+                  "_id": "695e8ca746b0f52429557553"
+                },
+                {
+                  "name": "S",
+                  "stock": 30,
+                  "_id": "695e8ca746b0f52429557554"
+                },
+                {
+                  "name": "M",
+                  "stock": 30,
+                  "_id": "695e8ca746b0f52429557555"
+                },
+                {
+                  "name": "L",
+                  "stock": 15,
+                  "_id": "695e8ca746b0f52429557556"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "Rainbow",
+                  "hexCode": "#FF69B4",
+                  "stock": 50,
+                  "_id": "695e8ca746b0f52429557557"
+                },
+                {
+                  "name": "Blue Gradient",
+                  "hexCode": "#00BFFF",
+                  "stock": 50,
+                  "_id": "695e8ca746b0f52429557558"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea",
+                  "alt": "Kids Rainbow Hoodie",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea",
+              "category": "kids",
+              "subcategory": "hoodies",
+              "tags": [
+                "kids",
+                "hoodie",
+                "colorful",
+                "organic"
+              ],
+              "isActive": true,
+              "isFeatured": false,
+              "isNewArrival": true,
+              "isOnSale": false,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.777Z",
+              "updatedAt": "2026-01-07T16:41:11.777Z",
+              "image": "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea"
+            },
+            {
+              "_id": "695e8ca746b0f52429557570",
+              "name": "High Waist Yoga Pants",
+              "slug": "high-waist-yoga-pants",
+              "description": "Ultra-comfortable high waist yoga pants with 4-way stretch. Features hidden pocket and moisture-wicking fabric for intense workouts.",
+              "shortDescription": "4-way stretch with moisture-wicking fabric",
+              "brand": "Active Life",
+              "price": 69.99,
+              "compareAtPrice": 89.99,
+              "currency": "USD",
+              "sku": "WOM-YOGA-001",
+              "stock": 200,
+              "sizes": [
+                {
+                  "name": "XS",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f52429557571"
+                },
+                {
+                  "name": "S",
+                  "stock": 50,
+                  "_id": "695e8ca746b0f52429557572"
+                },
+                {
+                  "name": "M",
+                  "stock": 60,
+                  "_id": "695e8ca746b0f52429557573"
+                },
+                {
+                  "name": "L",
+                  "stock": 50,
+                  "_id": "695e8ca746b0f52429557574"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "Black",
+                  "hexCode": "#000000",
+                  "stock": 100,
+                  "_id": "695e8ca746b0f52429557575"
+                },
+                {
+                  "name": "Deep Purple",
+                  "hexCode": "#673AB7",
+                  "stock": 100,
+                  "_id": "695e8ca746b0f52429557576"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1633707079221-63b0b83f9b87?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                  "alt": "High Waist Yoga Pants",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1633707079221-63b0b83f9b87?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+              "category": "women",
+              "subcategory": "activewear",
+              "tags": [
+                "yoga",
+                "activewear",
+                "pants",
+                "fitness"
+              ],
+              "isActive": true,
+              "isFeatured": false,
+              "isNewArrival": true,
+              "isOnSale": false,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.777Z",
+              "updatedAt": "2026-01-07T16:41:11.777Z"
+            },
+            {
+              "_id": "695e8ca746b0f5242955753d",
+              "name": "Slim Fit Denim Jeans",
+              "slug": "slim-fit-denim-jeans",
+              "description": "Modern slim fit jeans made from stretch denim for ultimate comfort. Features a classic five-pocket design with premium brass hardware.",
+              "shortDescription": "Comfortable stretch denim with slim fit",
+              "brand": "Urban Denim",
+              "price": 79.99,
+              "compareAtPrice": 110,
+              "currency": "USD",
+              "sku": "MEN-JEANS-001",
+              "stock": 200,
+              "sizes": [
+                {
+                  "name": "S",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f5242955753e"
+                },
+                {
+                  "name": "M",
+                  "stock": 60,
+                  "_id": "695e8ca746b0f5242955753f"
+                },
+                {
+                  "name": "L",
+                  "stock": 60,
+                  "_id": "695e8ca746b0f52429557540"
+                },
+                {
+                  "name": "XL",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f52429557541"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "Indigo",
+                  "hexCode": "#4B0082",
+                  "stock": 100,
+                  "_id": "695e8ca746b0f52429557542"
+                },
+                {
+                  "name": "Black",
+                  "hexCode": "#000000",
+                  "stock": 100,
+                  "_id": "695e8ca746b0f52429557543"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+                  "alt": "Slim Fit Denim Jeans",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+              "category": "men",
+              "subcategory": "jeans",
+              "tags": [
+                "jeans",
+                "denim",
+                "slim fit",
+                "casual"
+              ],
+              "isActive": true,
+              "isFeatured": false,
+              "isNewArrival": true,
+              "isOnSale": false,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.777Z",
+              "updatedAt": "2026-01-07T16:41:11.777Z",
+              "image": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35"
+            },
+            {
+              "_id": "695e8ca746b0f5242955752d",
+              "name": "Classic White Oxford Shirt",
+              "slug": "classic-white-oxford-shirt",
+              "description": "A timeless white oxford shirt crafted from premium cotton. Perfect for both casual and formal occasions with its crisp, clean finish.",
+              "shortDescription": "Premium cotton oxford shirt for versatile styling",
+              "brand": "Fashion Elite",
+              "price": 89.99,
+              "compareAtPrice": 120,
+              "currency": "USD",
+              "sku": "MEN-SHIRT-001",
+              "stock": 150,
+              "sizes": [
+                {
+                  "name": "S",
+                  "stock": 30,
+                  "_id": "695e8ca746b0f5242955752e"
+                },
+                {
+                  "name": "M",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f5242955752f"
+                },
+                {
+                  "name": "L",
+                  "stock": 50,
+                  "_id": "695e8ca746b0f52429557530"
+                },
+                {
+                  "name": "XL",
+                  "stock": 30,
+                  "_id": "695e8ca746b0f52429557531"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "White",
+                  "hexCode": "#FFFFFF",
+                  "stock": 75,
+                  "_id": "695e8ca746b0f52429557532"
+                },
+                {
+                  "name": "Light Blue",
+                  "hexCode": "#ADD8E6",
+                  "stock": 75,
+                  "_id": "695e8ca746b0f52429557533"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1617127365659-c47fa864d8bc",
+                  "alt": "Classic White Oxford Shirt",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1617127365659-c47fa864d8bc",
+              "category": "men",
+              "subcategory": "shirts",
+              "tags": [
+                "shirt",
+                "oxford",
+                "formal",
+                "casual",
+                "cotton"
+              ],
+              "isActive": true,
+              "isFeatured": true,
+              "isNewArrival": true,
+              "isOnSale": false,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.775Z",
+              "updatedAt": "2026-01-07T16:41:11.775Z",
+              "image": "https://images.unsplash.com/photo-1617127365659-c47fa864d8bc"
+            },
+            {
+              "_id": "69535582c0c6be9351a14eac",
+              "name": "Elegant Summer Dress",
+              "description": "A beautiful summer dress perfect for any occasion...",
+              "brand": "Fashion Brand",
+              "price": 89.99,
+              "compareAtPrice": 129.99,
+              "currency": "USD",
+              "stock": 50,
+              "lowStockThreshold": 10,
+              "trackInventory": true,
+              "sizes": [
+                {
+                  "name": "S",
+                  "stock": 15,
+                  "_id": "69535582c0c6be9351a14ead"
+                },
+                {
+                  "name": "M",
+                  "stock": 20,
+                  "_id": "69535582c0c6be9351a14eae"
+                },
+                {
+                  "name": "L",
+                  "stock": 15,
+                  "_id": "69535582c0c6be9351a14eaf"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "Navy Blue",
+                  "hexCode": "#000080",
+                  "stock": 25,
+                  "images": [],
+                  "_id": "69535582c0c6be9351a14eb0"
+                },
+                {
+                  "name": "White",
+                  "hexCode": "#FFFFFF",
+                  "stock": 25,
+                  "images": [],
+                  "_id": "69535582c0c6be9351a14eb1"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446",
+                  "alt": "Elegant Summer Dress",
+                  "isPrimary": true
+                }
+              ],
+              "category": "women",
+              "subcategory": "dresses",
+              "tags": [
+                "summer",
+                "dress",
+                "elegant"
+              ],
+              "collections": [],
+              "weight": {
+                "unit": "kg"
+              },
+              "dimensions": {
+                "unit": "cm"
+              },
+              "careInstructions": [],
+              "features": [],
+              "isActive": true,
+              "isFeatured": true,
+              "isNewArrival": true,
+              "isOnSale": false,
+              "ratings": {
+                "distribution": {
+                  "1": 0,
+                  "2": 0,
+                  "3": 0,
+                  "4": 0,
+                  "5": 0
+                },
+                "average": 0,
+                "count": 0
+              },
+              "numReviews": 0,
+              "createdBy": "695352dc21b77558ded446ba",
+              "materials": [],
+              "createdAt": "2025-12-30T04:30:58.552Z",
+              "updatedAt": "2025-12-30T04:30:58.552Z",
+              "slug": "elegant-summer-dress-mjs3ajui",
+              "thumbnail": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446",
+              "image": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446"
+            }
+          ],
+          "pagination": {
+            "currentPage": 1,
+            "totalPages": 1,
+            "totalProducts": 7,
+            "limit": 12,
+            "hasNextPage": false,
+            "hasPrevPage": false
+          }
+        }
+      }
+    },
+    {
+      "name": "Get Products - Sort by price ascending (200)",
+      "passed": true,
+      "duration": 6,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "data": {
+          "products": [
+            {
+              "_id": "695e8ca746b0f52429557552",
+              "name": "Kids Rainbow Hoodie",
+              "slug": "kids-rainbow-hoodie",
+              "description": "Fun and colorful rainbow hoodie for kids. Made from soft organic cotton with a cozy fleece lining. Features a kangaroo pocket and adjustable hood.",
+              "shortDescription": "Soft organic cotton hoodie for kids",
+              "brand": "Little Stars",
+              "price": 45.99,
+              "compareAtPrice": 59.99,
+              "currency": "USD",
+              "sku": "KIDS-HOOD-001",
+              "stock": 100,
+              "sizes": [
+                {
+                  "name": "XS",
+                  "stock": 25,
+                  "_id": "695e8ca746b0f52429557553"
+                },
+                {
+                  "name": "S",
+                  "stock": 30,
+                  "_id": "695e8ca746b0f52429557554"
+                },
+                {
+                  "name": "M",
+                  "stock": 30,
+                  "_id": "695e8ca746b0f52429557555"
+                },
+                {
+                  "name": "L",
+                  "stock": 15,
+                  "_id": "695e8ca746b0f52429557556"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "Rainbow",
+                  "hexCode": "#FF69B4",
+                  "stock": 50,
+                  "_id": "695e8ca746b0f52429557557"
+                },
+                {
+                  "name": "Blue Gradient",
+                  "hexCode": "#00BFFF",
+                  "stock": 50,
+                  "_id": "695e8ca746b0f52429557558"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea",
+                  "alt": "Kids Rainbow Hoodie",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea",
+              "category": "kids",
+              "subcategory": "hoodies",
+              "tags": [
+                "kids",
+                "hoodie",
+                "colorful",
+                "organic"
+              ],
+              "isActive": true,
+              "isFeatured": false,
+              "isNewArrival": true,
+              "isOnSale": false,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.777Z",
+              "updatedAt": "2026-01-07T16:41:11.777Z",
+              "image": "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea"
+            },
+            {
+              "_id": "695e8ca746b0f52429557580",
+              "name": "Kids Denim Overall",
+              "slug": "kids-denim-overall",
+              "description": "Adorable denim overall for kids with adjustable straps. Made from soft stretch denim with fun embroidered details and multiple pockets.",
+              "shortDescription": "Soft stretch denim with embroidered details",
+              "brand": "Little Stars",
+              "price": 55.99,
+              "compareAtPrice": 75,
+              "currency": "USD",
+              "sku": "KIDS-OVER-001",
+              "stock": 80,
+              "sizes": [
+                {
+                  "name": "XS",
+                  "stock": 20,
+                  "_id": "695e8ca746b0f52429557581"
+                },
+                {
+                  "name": "S",
+                  "stock": 25,
+                  "_id": "695e8ca746b0f52429557582"
+                },
+                {
+                  "name": "M",
+                  "stock": 25,
+                  "_id": "695e8ca746b0f52429557583"
+                },
+                {
+                  "name": "L",
+                  "stock": 10,
+                  "_id": "695e8ca746b0f52429557584"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "Light Wash",
+                  "hexCode": "#87CEEB",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f52429557585"
+                },
+                {
+                  "name": "Dark Wash",
+                  "hexCode": "#191970",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f52429557586"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af",
+                  "alt": "Kids Denim Overall",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af",
+              "category": "kids",
+              "subcategory": "overalls",
+              "tags": [
+                "kids",
+                "denim",
+                "overall",
+                "casual"
+              ],
+              "isActive": true,
+              "isFeatured": false,
+              "isNewArrival": true,
+              "isOnSale": false,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.778Z",
+              "updatedAt": "2026-01-07T16:41:11.778Z",
+              "image": "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af"
+            },
+            {
+              "_id": "695e8ca746b0f52429557578",
+              "name": "Vintage Leather Belt",
+              "slug": "vintage-leather-belt",
+              "description": "Handcrafted vintage-style leather belt with antique brass buckle. Made from full-grain leather that ages beautifully over time.",
+              "shortDescription": "Full-grain leather with antique brass buckle",
+              "brand": "Artisan Leather",
+              "price": 59.99,
+              "compareAtPrice": 79.99,
+              "currency": "USD",
+              "sku": "ACC-BELT-001",
+              "stock": 120,
+              "sizes": [
+                {
+                  "name": "S",
+                  "stock": 30,
+                  "_id": "695e8ca746b0f52429557579"
+                },
+                {
+                  "name": "M",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f5242955757a"
+                },
+                {
+                  "name": "L",
+                  "stock": 35,
+                  "_id": "695e8ca746b0f5242955757b"
+                },
+                {
+                  "name": "XL",
+                  "stock": 15,
+                  "_id": "695e8ca746b0f5242955757c"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "Brown",
+                  "hexCode": "#8B4513",
+                  "stock": 60,
+                  "_id": "695e8ca746b0f5242955757d"
+                },
+                {
+                  "name": "Black",
+                  "hexCode": "#000000",
+                  "stock": 60,
+                  "_id": "695e8ca746b0f5242955757e"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9",
+                  "alt": "Vintage Leather Belt",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9",
+              "category": "accessories",
+              "subcategory": "belts",
+              "tags": [
+                "belt",
+                "leather",
+                "vintage",
+                "accessories"
+              ],
+              "isActive": true,
+              "isFeatured": false,
+              "isNewArrival": false,
+              "isOnSale": false,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.778Z",
+              "updatedAt": "2026-01-07T16:41:11.778Z",
+              "image": "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9"
+            },
+            {
+              "_id": "695e8ca746b0f52429557570",
+              "name": "High Waist Yoga Pants",
+              "slug": "high-waist-yoga-pants",
+              "description": "Ultra-comfortable high waist yoga pants with 4-way stretch. Features hidden pocket and moisture-wicking fabric for intense workouts.",
+              "shortDescription": "4-way stretch with moisture-wicking fabric",
+              "brand": "Active Life",
+              "price": 69.99,
+              "compareAtPrice": 89.99,
+              "currency": "USD",
+              "sku": "WOM-YOGA-001",
+              "stock": 200,
+              "sizes": [
+                {
+                  "name": "XS",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f52429557571"
+                },
+                {
+                  "name": "S",
+                  "stock": 50,
+                  "_id": "695e8ca746b0f52429557572"
+                },
+                {
+                  "name": "M",
+                  "stock": 60,
+                  "_id": "695e8ca746b0f52429557573"
+                },
+                {
+                  "name": "L",
+                  "stock": 50,
+                  "_id": "695e8ca746b0f52429557574"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "Black",
+                  "hexCode": "#000000",
+                  "stock": 100,
+                  "_id": "695e8ca746b0f52429557575"
+                },
+                {
+                  "name": "Deep Purple",
+                  "hexCode": "#673AB7",
+                  "stock": 100,
+                  "_id": "695e8ca746b0f52429557576"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1633707079221-63b0b83f9b87?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                  "alt": "High Waist Yoga Pants",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1633707079221-63b0b83f9b87?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+              "category": "women",
+              "subcategory": "activewear",
+              "tags": [
+                "yoga",
+                "activewear",
+                "pants",
+                "fitness"
+              ],
+              "isActive": true,
+              "isFeatured": false,
+              "isNewArrival": true,
+              "isOnSale": false,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.777Z",
+              "updatedAt": "2026-01-07T16:41:11.777Z"
+            },
+            {
+              "_id": "695e8ca746b0f5242955753d",
+              "name": "Slim Fit Denim Jeans",
+              "slug": "slim-fit-denim-jeans",
+              "description": "Modern slim fit jeans made from stretch denim for ultimate comfort. Features a classic five-pocket design with premium brass hardware.",
+              "shortDescription": "Comfortable stretch denim with slim fit",
+              "brand": "Urban Denim",
+              "price": 79.99,
+              "compareAtPrice": 110,
+              "currency": "USD",
+              "sku": "MEN-JEANS-001",
+              "stock": 200,
+              "sizes": [
+                {
+                  "name": "S",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f5242955753e"
+                },
+                {
+                  "name": "M",
+                  "stock": 60,
+                  "_id": "695e8ca746b0f5242955753f"
+                },
+                {
+                  "name": "L",
+                  "stock": 60,
+                  "_id": "695e8ca746b0f52429557540"
+                },
+                {
+                  "name": "XL",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f52429557541"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "Indigo",
+                  "hexCode": "#4B0082",
+                  "stock": 100,
+                  "_id": "695e8ca746b0f52429557542"
+                },
+                {
+                  "name": "Black",
+                  "hexCode": "#000000",
+                  "stock": 100,
+                  "_id": "695e8ca746b0f52429557543"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+                  "alt": "Slim Fit Denim Jeans",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+              "category": "men",
+              "subcategory": "jeans",
+              "tags": [
+                "jeans",
+                "denim",
+                "slim fit",
+                "casual"
+              ],
+              "isActive": true,
+              "isFeatured": false,
+              "isNewArrival": true,
+              "isOnSale": false,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.777Z",
+              "updatedAt": "2026-01-07T16:41:11.777Z",
+              "image": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35"
+            },
+            {
+              "_id": "695e8ca746b0f5242955752d",
+              "name": "Classic White Oxford Shirt",
+              "slug": "classic-white-oxford-shirt",
+              "description": "A timeless white oxford shirt crafted from premium cotton. Perfect for both casual and formal occasions with its crisp, clean finish.",
+              "shortDescription": "Premium cotton oxford shirt for versatile styling",
+              "brand": "Fashion Elite",
+              "price": 89.99,
+              "compareAtPrice": 120,
+              "currency": "USD",
+              "sku": "MEN-SHIRT-001",
+              "stock": 150,
+              "sizes": [
+                {
+                  "name": "S",
+                  "stock": 30,
+                  "_id": "695e8ca746b0f5242955752e"
+                },
+                {
+                  "name": "M",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f5242955752f"
+                },
+                {
+                  "name": "L",
+                  "stock": 50,
+                  "_id": "695e8ca746b0f52429557530"
+                },
+                {
+                  "name": "XL",
+                  "stock": 30,
+                  "_id": "695e8ca746b0f52429557531"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "White",
+                  "hexCode": "#FFFFFF",
+                  "stock": 75,
+                  "_id": "695e8ca746b0f52429557532"
+                },
+                {
+                  "name": "Light Blue",
+                  "hexCode": "#ADD8E6",
+                  "stock": 75,
+                  "_id": "695e8ca746b0f52429557533"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1617127365659-c47fa864d8bc",
+                  "alt": "Classic White Oxford Shirt",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1617127365659-c47fa864d8bc",
+              "category": "men",
+              "subcategory": "shirts",
+              "tags": [
+                "shirt",
+                "oxford",
+                "formal",
+                "casual",
+                "cotton"
+              ],
+              "isActive": true,
+              "isFeatured": true,
+              "isNewArrival": true,
+              "isOnSale": false,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.775Z",
+              "updatedAt": "2026-01-07T16:41:11.775Z",
+              "image": "https://images.unsplash.com/photo-1617127365659-c47fa864d8bc"
+            },
+            {
+              "_id": "69535582c0c6be9351a14eac",
+              "name": "Elegant Summer Dress",
+              "description": "A beautiful summer dress perfect for any occasion...",
+              "brand": "Fashion Brand",
+              "price": 89.99,
+              "compareAtPrice": 129.99,
+              "currency": "USD",
+              "stock": 50,
+              "lowStockThreshold": 10,
+              "trackInventory": true,
+              "sizes": [
+                {
+                  "name": "S",
+                  "stock": 15,
+                  "_id": "69535582c0c6be9351a14ead"
+                },
+                {
+                  "name": "M",
+                  "stock": 20,
+                  "_id": "69535582c0c6be9351a14eae"
+                },
+                {
+                  "name": "L",
+                  "stock": 15,
+                  "_id": "69535582c0c6be9351a14eaf"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "Navy Blue",
+                  "hexCode": "#000080",
+                  "stock": 25,
+                  "images": [],
+                  "_id": "69535582c0c6be9351a14eb0"
+                },
+                {
+                  "name": "White",
+                  "hexCode": "#FFFFFF",
+                  "stock": 25,
+                  "images": [],
+                  "_id": "69535582c0c6be9351a14eb1"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446",
+                  "alt": "Elegant Summer Dress",
+                  "isPrimary": true
+                }
+              ],
+              "category": "women",
+              "subcategory": "dresses",
+              "tags": [
+                "summer",
+                "dress",
+                "elegant"
+              ],
+              "collections": [],
+              "weight": {
+                "unit": "kg"
+              },
+              "dimensions": {
+                "unit": "cm"
+              },
+              "careInstructions": [],
+              "features": [],
+              "isActive": true,
+              "isFeatured": true,
+              "isNewArrival": true,
+              "isOnSale": false,
+              "ratings": {
+                "distribution": {
+                  "1": 0,
+                  "2": 0,
+                  "3": 0,
+                  "4": 0,
+                  "5": 0
+                },
+                "average": 0,
+                "count": 0
+              },
+              "numReviews": 0,
+              "createdBy": "695352dc21b77558ded446ba",
+              "materials": [],
+              "createdAt": "2025-12-30T04:30:58.552Z",
+              "updatedAt": "2025-12-30T04:30:58.552Z",
+              "slug": "elegant-summer-dress-mjs3ajui",
+              "thumbnail": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446",
+              "image": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446"
+            },
+            {
+              "_id": "695e8ca746b0f52429557545",
+              "name": "Floral Summer Dress",
+              "slug": "floral-summer-dress",
+              "description": "Beautiful floral print dress perfect for summer days. Made from lightweight breathable fabric with a flattering A-line silhouette.",
+              "shortDescription": "Lightweight floral A-line dress",
+              "brand": "Summer Bloom",
+              "price": 119.99,
+              "compareAtPrice": 159.99,
+              "currency": "USD",
+              "sku": "WOM-DRESS-001",
+              "stock": 120,
+              "sizes": [
+                {
+                  "name": "XS",
+                  "stock": 20,
+                  "_id": "695e8ca746b0f52429557546"
+                },
+                {
+                  "name": "S",
+                  "stock": 35,
+                  "_id": "695e8ca746b0f52429557547"
+                },
+                {
+                  "name": "M",
+                  "stock": 35,
+                  "_id": "695e8ca746b0f52429557548"
+                },
+                {
+                  "name": "L",
+                  "stock": 30,
+                  "_id": "695e8ca746b0f52429557549"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "Blue Floral",
+                  "hexCode": "#6495ED",
+                  "stock": 60,
+                  "_id": "695e8ca746b0f5242955754a"
+                },
+                {
+                  "name": "Pink Floral",
+                  "hexCode": "#FFC0CB",
+                  "stock": 60,
+                  "_id": "695e8ca746b0f5242955754b"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1",
+                  "alt": "Floral Summer Dress",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1",
+              "category": "women",
+              "subcategory": "dresses",
+              "tags": [
+                "dress",
+                "floral",
+                "summer",
+                "casual"
+              ],
+              "isActive": true,
+              "isFeatured": true,
+              "isNewArrival": true,
+              "isOnSale": true,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.777Z",
+              "updatedAt": "2026-01-07T16:41:11.777Z",
+              "image": "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1"
+            },
+            {
+              "_id": "695e8ca746b0f5242955755a",
+              "name": "Classic Leather Sneakers",
+              "slug": "classic-leather-sneakers",
+              "description": "Timeless leather sneakers with cushioned insole for all-day comfort. Features clean minimalist design that pairs perfectly with any outfit.",
+              "shortDescription": "Minimalist leather sneakers with cushioned sole",
+              "brand": "Step Style",
+              "price": 129.99,
+              "compareAtPrice": 169.99,
+              "currency": "USD",
+              "sku": "SHOES-SNEAK-001",
+              "stock": 180,
+              "sizes": [
+                {
+                  "name": "S",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f5242955755b"
+                },
+                {
+                  "name": "M",
+                  "stock": 60,
+                  "_id": "695e8ca746b0f5242955755c"
+                },
+                {
+                  "name": "L",
+                  "stock": 50,
+                  "_id": "695e8ca746b0f5242955755d"
+                },
+                {
+                  "name": "XL",
+                  "stock": 30,
+                  "_id": "695e8ca746b0f5242955755e"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "White",
+                  "hexCode": "#FFFFFF",
+                  "stock": 90,
+                  "_id": "695e8ca746b0f5242955755f"
+                },
+                {
+                  "name": "Black",
+                  "hexCode": "#000000",
+                  "stock": 90,
+                  "_id": "695e8ca746b0f52429557560"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1549298916-b41d501d3772",
+                  "alt": "Classic Leather Sneakers",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1549298916-b41d501d3772",
+              "category": "shoes",
+              "subcategory": "sneakers",
+              "tags": [
+                "shoes",
+                "sneakers",
+                "leather",
+                "casual"
+              ],
+              "isActive": true,
+              "isFeatured": true,
+              "isNewArrival": true,
+              "isOnSale": false,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.777Z",
+              "updatedAt": "2026-01-07T16:41:11.777Z",
+              "image": "https://images.unsplash.com/photo-1549298916-b41d501d3772"
+            },
+            {
+              "_id": "695e8ca746b0f52429557535",
+              "name": "Elegant Silk Blouse",
+              "slug": "elegant-silk-blouse",
+              "description": "Luxurious silk blouse with a flattering drape. Features delicate pearl buttons and a sophisticated neckline perfect for office or evening wear.",
+              "shortDescription": "Luxurious silk blouse with pearl buttons",
+              "brand": "Luxe Fashion",
+              "price": 149.99,
+              "compareAtPrice": 199.99,
+              "currency": "USD",
+              "sku": "WOM-BLOUSE-001",
+              "stock": 80,
+              "sizes": [
+                {
+                  "name": "XS",
+                  "stock": 15,
+                  "_id": "695e8ca746b0f52429557536"
+                },
+                {
+                  "name": "S",
+                  "stock": 25,
+                  "_id": "695e8ca746b0f52429557537"
+                },
+                {
+                  "name": "M",
+                  "stock": 25,
+                  "_id": "695e8ca746b0f52429557538"
+                },
+                {
+                  "name": "L",
+                  "stock": 15,
+                  "_id": "695e8ca746b0f52429557539"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "Ivory",
+                  "hexCode": "#FFFFF0",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f5242955753a"
+                },
+                {
+                  "name": "Blush Pink",
+                  "hexCode": "#FFB6C1",
+                  "stock": 40,
+                  "_id": "695e8ca746b0f5242955753b"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1496747611176-843222e1e57c",
+                  "alt": "Elegant Silk Blouse",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1496747611176-843222e1e57c",
+              "category": "women",
+              "subcategory": "blouses",
+              "tags": [
+                "blouse",
+                "silk",
+                "elegant",
+                "office",
+                "evening"
+              ],
+              "isActive": true,
+              "isFeatured": true,
+              "isNewArrival": true,
+              "isOnSale": false,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.776Z",
+              "updatedAt": "2026-01-07T16:41:11.776Z",
+              "image": "https://images.unsplash.com/photo-1496747611176-843222e1e57c"
+            },
+            {
+              "_id": "695e8ca746b0f52429557562",
+              "name": "Cashmere Scarf",
+              "slug": "cashmere-scarf",
+              "description": "Ultra-soft 100% cashmere scarf perfect for cold weather. Lightweight yet warm with elegant fringe detailing on both ends.",
+              "shortDescription": "100% cashmere with elegant fringe",
+              "brand": "Luxe Fashion",
+              "price": 159.99,
+              "compareAtPrice": 220,
+              "currency": "USD",
+              "sku": "ACC-SCARF-001",
+              "stock": 75,
+              "sizes": [
+                {
+                  "name": "One Size",
+                  "stock": 75,
+                  "_id": "695e8ca746b0f52429557563"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "Camel",
+                  "hexCode": "#C19A6B",
+                  "stock": 25,
+                  "_id": "695e8ca746b0f52429557564"
+                },
+                {
+                  "name": "Grey",
+                  "hexCode": "#808080",
+                  "stock": 25,
+                  "_id": "695e8ca746b0f52429557565"
+                },
+                {
+                  "name": "Navy",
+                  "hexCode": "#000080",
+                  "stock": 25,
+                  "_id": "695e8ca746b0f52429557566"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62",
+                  "alt": "Cashmere Scarf",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62",
+              "category": "accessories",
+              "subcategory": "scarves",
+              "tags": [
+                "scarf",
+                "cashmere",
+                "winter",
+                "luxury"
+              ],
+              "isActive": true,
+              "isFeatured": false,
+              "isNewArrival": true,
+              "isOnSale": true,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.777Z",
+              "updatedAt": "2026-01-07T16:41:11.777Z",
+              "image": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62"
+            },
+            {
+              "_id": "695e8ca746b0f5242955754d",
+              "name": "Leather Crossbody Bag",
+              "slug": "leather-crossbody-bag",
+              "description": "Handcrafted genuine leather crossbody bag with adjustable strap. Features multiple compartments and premium gold-tone hardware.",
+              "shortDescription": "Genuine leather bag with gold hardware",
+              "brand": "Artisan Leather",
+              "price": 189.99,
+              "compareAtPrice": 249.99,
+              "currency": "USD",
+              "sku": "ACC-BAG-001",
+              "stock": 60,
+              "sizes": [
+                {
+                  "name": "One Size",
+                  "stock": 60,
+                  "_id": "695e8ca746b0f5242955754e"
+                }
+              ],
+              "colors": [
+                {
+                  "name": "Tan",
+                  "hexCode": "#D2691E",
+                  "stock": 30,
+                  "_id": "695e8ca746b0f5242955754f"
+                },
+                {
+                  "name": "Black",
+                  "hexCode": "#000000",
+                  "stock": 30,
+                  "_id": "695e8ca746b0f52429557550"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa",
+                  "alt": "Leather Crossbody Bag",
+                  "isPrimary": true
+                }
+              ],
+              "thumbnail": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa",
+              "category": "bags",
+              "subcategory": "crossbody",
+              "tags": [
+                "bag",
+                "leather",
+                "crossbody",
+                "accessories"
+              ],
+              "isActive": true,
+              "isFeatured": true,
+              "isNewArrival": false,
+              "isOnSale": false,
+              "ratings": {
+                "average": 0,
+                "count": 0
+              },
+              "createdAt": "2026-01-07T16:41:11.777Z",
+              "updatedAt": "2026-01-07T16:41:11.777Z",
+              "image": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa"
+            }
+          ],
+          "pagination": {
+            "currentPage": 1,
+            "totalPages": 2,
+            "totalProducts": 15,
+            "limit": 12,
+            "hasNextPage": true,
+            "hasPrevPage": false
+          }
+        }
+      }
+    },
+    {
+      "name": "Get Single Product - Valid ID (200)",
+      "passed": {
+        "weight": {
+          "unit": "kg"
+        },
+        "dimensions": {
+          "unit": "cm"
+        },
+        "ratings": {
+          "distribution": {
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0
+          },
+          "average": 0,
+          "count": 0
+        },
+        "lowStockThreshold": 10,
+        "trackInventory": true,
+        "collections": [],
+        "careInstructions": [],
+        "features": [],
+        "numReviews": 0,
+        "_id": "695e8ca746b0f52429557578",
+        "name": "Vintage Leather Belt",
+        "slug": "vintage-leather-belt",
+        "description": "Handcrafted vintage-style leather belt with antique brass buckle. Made from full-grain leather that ages beautifully over time.",
+        "shortDescription": "Full-grain leather with antique brass buckle",
+        "brand": "Artisan Leather",
+        "price": 59.99,
+        "compareAtPrice": 79.99,
+        "currency": "USD",
+        "sku": "ACC-BELT-001",
+        "stock": 120,
+        "sizes": [
+          {
+            "name": "S",
+            "stock": 30,
+            "_id": "695e8ca746b0f52429557579",
+            "id": "695e8ca746b0f52429557579"
+          },
+          {
+            "name": "M",
+            "stock": 40,
+            "_id": "695e8ca746b0f5242955757a",
+            "id": "695e8ca746b0f5242955757a"
+          },
+          {
+            "name": "L",
+            "stock": 35,
+            "_id": "695e8ca746b0f5242955757b",
+            "id": "695e8ca746b0f5242955757b"
+          },
+          {
+            "name": "XL",
+            "stock": 15,
+            "_id": "695e8ca746b0f5242955757c",
+            "id": "695e8ca746b0f5242955757c"
+          }
+        ],
+        "colors": [
+          {
+            "images": [],
+            "name": "Brown",
+            "hexCode": "#8B4513",
+            "stock": 60,
+            "_id": "695e8ca746b0f5242955757d",
+            "id": "695e8ca746b0f5242955757d"
+          },
+          {
+            "images": [],
+            "name": "Black",
+            "hexCode": "#000000",
+            "stock": 60,
+            "_id": "695e8ca746b0f5242955757e",
+            "id": "695e8ca746b0f5242955757e"
+          }
+        ],
+        "images": [
+          {
+            "order": 0,
+            "_id": "697a45fafb3125b9657c75e3",
+            "url": "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9",
+            "alt": "Vintage Leather Belt",
+            "isPrimary": true,
+            "id": "697a45fafb3125b9657c75e3"
+          }
+        ],
+        "thumbnail": "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9",
+        "category": "accessories",
+        "subcategory": "belts",
+        "tags": [
+          "belt",
+          "leather",
+          "vintage",
+          "accessories"
+        ],
+        "isActive": true,
+        "isFeatured": false,
+        "isNewArrival": false,
+        "isOnSale": false,
+        "__v": 0,
+        "createdAt": "2026-01-07T16:41:11.778Z",
+        "updatedAt": "2026-01-07T16:41:11.778Z",
+        "image": "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9",
+        "materials": [],
+        "discountPercentage": 25,
+        "inStock": true,
+        "isLowStock": false,
+        "primaryImage": "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9",
+        "id": "695e8ca746b0f52429557578"
+      },
+      "duration": 6,
+      "expected": "Status 200, success: true, product exists",
+      "actual": "Status 200, success: true, product: exists",
+      "response": {
+        "success": true,
+        "data": {
+          "product": {
+            "weight": {
+              "unit": "kg"
+            },
+            "dimensions": {
+              "unit": "cm"
+            },
+            "ratings": {
+              "distribution": {
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0,
+                "5": 0
+              },
+              "average": 0,
+              "count": 0
+            },
+            "lowStockThreshold": 10,
+            "trackInventory": true,
+            "collections": [],
+            "careInstructions": [],
+            "features": [],
+            "numReviews": 0,
+            "_id": "695e8ca746b0f52429557578",
+            "name": "Vintage Leather Belt",
+            "slug": "vintage-leather-belt",
+            "description": "Handcrafted vintage-style leather belt with antique brass buckle. Made from full-grain leather that ages beautifully over time.",
+            "shortDescription": "Full-grain leather with antique brass buckle",
+            "brand": "Artisan Leather",
+            "price": 59.99,
+            "compareAtPrice": 79.99,
+            "currency": "USD",
+            "sku": "ACC-BELT-001",
+            "stock": 120,
+            "sizes": [
+              {
+                "name": "S",
+                "stock": 30,
+                "_id": "695e8ca746b0f52429557579",
+                "id": "695e8ca746b0f52429557579"
+              },
+              {
+                "name": "M",
+                "stock": 40,
+                "_id": "695e8ca746b0f5242955757a",
+                "id": "695e8ca746b0f5242955757a"
+              },
+              {
+                "name": "L",
+                "stock": 35,
+                "_id": "695e8ca746b0f5242955757b",
+                "id": "695e8ca746b0f5242955757b"
+              },
+              {
+                "name": "XL",
+                "stock": 15,
+                "_id": "695e8ca746b0f5242955757c",
+                "id": "695e8ca746b0f5242955757c"
+              }
+            ],
+            "colors": [
+              {
+                "images": [],
+                "name": "Brown",
+                "hexCode": "#8B4513",
+                "stock": 60,
+                "_id": "695e8ca746b0f5242955757d",
+                "id": "695e8ca746b0f5242955757d"
+              },
+              {
+                "images": [],
+                "name": "Black",
+                "hexCode": "#000000",
+                "stock": 60,
+                "_id": "695e8ca746b0f5242955757e",
+                "id": "695e8ca746b0f5242955757e"
+              }
+            ],
+            "images": [
+              {
+                "order": 0,
+                "_id": "697a45fafb3125b9657c75e3",
+                "url": "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9",
+                "alt": "Vintage Leather Belt",
+                "isPrimary": true,
+                "id": "697a45fafb3125b9657c75e3"
+              }
+            ],
+            "thumbnail": "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9",
+            "category": "accessories",
+            "subcategory": "belts",
+            "tags": [
+              "belt",
+              "leather",
+              "vintage",
+              "accessories"
+            ],
+            "isActive": true,
+            "isFeatured": false,
+            "isNewArrival": false,
+            "isOnSale": false,
+            "__v": 0,
+            "createdAt": "2026-01-07T16:41:11.778Z",
+            "updatedAt": "2026-01-07T16:41:11.778Z",
+            "image": "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9",
+            "materials": [],
+            "discountPercentage": 25,
+            "inStock": true,
+            "isLowStock": false,
+            "primaryImage": "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9",
+            "id": "695e8ca746b0f52429557578"
+          }
+        }
+      }
+    },
+    {
+      "name": "Get Single Product - Not found (404)",
+      "passed": true,
+      "duration": 6,
+      "expected": "Status 404, success: false",
+      "actual": "Status 404, success: false",
+      "response": {
+        "success": false,
+        "status": "fail",
+        "error": {
+          "statusCode": 404,
+          "status": "fail",
+          "isOperational": true
+        },
+        "message": "Product not found",
+        "stack": "Error: Product not found\n    at file:///D:/fashion-website-frontend/fashion-website-backend/src/controllers/productController.js:137:17\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)"
+      }
+    },
+    {
+      "name": "Get Single Product - Invalid ID format (400/404)",
+      "passed": true,
+      "duration": 4,
+      "expected": "Status 400 or 404",
+      "actual": "Status 404",
+      "response": {
+        "success": false,
+        "status": "fail",
+        "error": {
+          "statusCode": 404,
+          "status": "fail",
+          "isOperational": true
+        },
+        "message": "Product not found",
+        "stack": "Error: Product not found\n    at file:///D:/fashion-website-frontend/fashion-website-backend/src/controllers/productController.js:137:17\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)"
+      }
+    },
+    {
+      "name": "Get Featured Products (200)",
+      "passed": true,
+      "duration": 5,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "data": {
+          "products": [
+            {
+              "_id": "695e8ca746b0f52429557545",
+              "name": "Floral Summer Dress",
+              "slug": "floral-summer-dress",
+              "price": 119.99,
+              "compareAtPrice": 159.99,
+              "thumbnail": "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1",
+              "category": "women",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f5242955754d",
+              "name": "Leather Crossbody Bag",
+              "slug": "leather-crossbody-bag",
+              "price": 189.99,
+              "compareAtPrice": 249.99,
+              "thumbnail": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa",
+              "category": "bags",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f5242955755a",
+              "name": "Classic Leather Sneakers",
+              "slug": "classic-leather-sneakers",
+              "price": 129.99,
+              "compareAtPrice": 169.99,
+              "thumbnail": "https://images.unsplash.com/photo-1549298916-b41d501d3772",
+              "category": "shoes",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f52429557568",
+              "name": "Wool Blend Blazer",
+              "slug": "wool-blend-blazer",
+              "price": 249.99,
+              "compareAtPrice": 329.99,
+              "thumbnail": "https://images.unsplash.com/photo-1507679799987-c73779587ccf",
+              "category": "men",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f52429557535",
+              "name": "Elegant Silk Blouse",
+              "slug": "elegant-silk-blouse",
+              "price": 149.99,
+              "compareAtPrice": 199.99,
+              "thumbnail": "https://images.unsplash.com/photo-1496747611176-843222e1e57c",
+              "category": "women",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f5242955752d",
+              "name": "Classic White Oxford Shirt",
+              "slug": "classic-white-oxford-shirt",
+              "price": 89.99,
+              "compareAtPrice": 120,
+              "thumbnail": "https://images.unsplash.com/photo-1617127365659-c47fa864d8bc",
+              "category": "men",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "69535582c0c6be9351a14eac",
+              "name": "Elegant Summer Dress",
+              "price": 89.99,
+              "compareAtPrice": 129.99,
+              "category": "women",
+              "ratings": {
+                "distribution": {
+                  "1": 0,
+                  "2": 0,
+                  "3": 0,
+                  "4": 0,
+                  "5": 0
+                },
+                "average": 0,
+                "count": 0
+              },
+              "slug": "elegant-summer-dress-mjs3ajui",
+              "thumbnail": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446"
+            },
+            {
+              "_id": "696685eb6a051d12265b30d8",
+              "name": "Short A-line Skirt",
+              "category": "Skirt",
+              "price": 280000,
+              "slug": "short-a-line-skirt",
+              "ratings": {
+                "distribution": {
+                  "1": 0,
+                  "2": 0,
+                  "3": 0,
+                  "4": 0,
+                  "5": 0
+                },
+                "average": 0,
+                "count": 0
+              },
+              "thumbnail": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get New Arrivals (200)",
+      "passed": true,
+      "duration": 4,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "data": {
+          "products": [
+            {
+              "_id": "695e8ca746b0f52429557580",
+              "name": "Kids Denim Overall",
+              "slug": "kids-denim-overall",
+              "price": 55.99,
+              "compareAtPrice": 75,
+              "thumbnail": "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af",
+              "category": "kids",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f5242955753d",
+              "name": "Slim Fit Denim Jeans",
+              "slug": "slim-fit-denim-jeans",
+              "price": 79.99,
+              "compareAtPrice": 110,
+              "thumbnail": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+              "category": "men",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f52429557545",
+              "name": "Floral Summer Dress",
+              "slug": "floral-summer-dress",
+              "price": 119.99,
+              "compareAtPrice": 159.99,
+              "thumbnail": "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1",
+              "category": "women",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f52429557552",
+              "name": "Kids Rainbow Hoodie",
+              "slug": "kids-rainbow-hoodie",
+              "price": 45.99,
+              "compareAtPrice": 59.99,
+              "thumbnail": "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea",
+              "category": "kids",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f5242955755a",
+              "name": "Classic Leather Sneakers",
+              "slug": "classic-leather-sneakers",
+              "price": 129.99,
+              "compareAtPrice": 169.99,
+              "thumbnail": "https://images.unsplash.com/photo-1549298916-b41d501d3772",
+              "category": "shoes",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f52429557562",
+              "name": "Cashmere Scarf",
+              "slug": "cashmere-scarf",
+              "price": 159.99,
+              "compareAtPrice": 220,
+              "thumbnail": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62",
+              "category": "accessories",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f52429557570",
+              "name": "High Waist Yoga Pants",
+              "slug": "high-waist-yoga-pants",
+              "price": 69.99,
+              "compareAtPrice": 89.99,
+              "thumbnail": "https://images.unsplash.com/photo-1633707079221-63b0b83f9b87?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+              "category": "women",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f52429557535",
+              "name": "Elegant Silk Blouse",
+              "slug": "elegant-silk-blouse",
+              "price": 149.99,
+              "compareAtPrice": 199.99,
+              "thumbnail": "https://images.unsplash.com/photo-1496747611176-843222e1e57c",
+              "category": "women",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Sale Products (200)",
+      "passed": true,
+      "duration": 4,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "data": {
+          "products": [
+            {
+              "_id": "695e8ca746b0f52429557578",
+              "name": "Vintage Leather Belt",
+              "slug": "vintage-leather-belt",
+              "price": 59.99,
+              "compareAtPrice": 79.99,
+              "thumbnail": "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9",
+              "category": "accessories",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f52429557580",
+              "name": "Kids Denim Overall",
+              "slug": "kids-denim-overall",
+              "price": 55.99,
+              "compareAtPrice": 75,
+              "thumbnail": "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af",
+              "category": "kids",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f5242955753d",
+              "name": "Slim Fit Denim Jeans",
+              "slug": "slim-fit-denim-jeans",
+              "price": 79.99,
+              "compareAtPrice": 110,
+              "thumbnail": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+              "category": "men",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f52429557545",
+              "name": "Floral Summer Dress",
+              "slug": "floral-summer-dress",
+              "price": 119.99,
+              "compareAtPrice": 159.99,
+              "thumbnail": "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1",
+              "category": "women",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f5242955754d",
+              "name": "Leather Crossbody Bag",
+              "slug": "leather-crossbody-bag",
+              "price": 189.99,
+              "compareAtPrice": 249.99,
+              "thumbnail": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa",
+              "category": "bags",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f52429557552",
+              "name": "Kids Rainbow Hoodie",
+              "slug": "kids-rainbow-hoodie",
+              "price": 45.99,
+              "compareAtPrice": 59.99,
+              "thumbnail": "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea",
+              "category": "kids",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f5242955755a",
+              "name": "Classic Leather Sneakers",
+              "slug": "classic-leather-sneakers",
+              "price": 129.99,
+              "compareAtPrice": 169.99,
+              "thumbnail": "https://images.unsplash.com/photo-1549298916-b41d501d3772",
+              "category": "shoes",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f52429557562",
+              "name": "Cashmere Scarf",
+              "slug": "cashmere-scarf",
+              "price": 159.99,
+              "compareAtPrice": 220,
+              "thumbnail": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62",
+              "category": "accessories",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f52429557568",
+              "name": "Wool Blend Blazer",
+              "slug": "wool-blend-blazer",
+              "price": 249.99,
+              "compareAtPrice": 329.99,
+              "thumbnail": "https://images.unsplash.com/photo-1507679799987-c73779587ccf",
+              "category": "men",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f52429557570",
+              "name": "High Waist Yoga Pants",
+              "slug": "high-waist-yoga-pants",
+              "price": 69.99,
+              "compareAtPrice": 89.99,
+              "thumbnail": "https://images.unsplash.com/photo-1633707079221-63b0b83f9b87?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+              "category": "women",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f52429557535",
+              "name": "Elegant Silk Blouse",
+              "slug": "elegant-silk-blouse",
+              "price": 149.99,
+              "compareAtPrice": 199.99,
+              "thumbnail": "https://images.unsplash.com/photo-1496747611176-843222e1e57c",
+              "category": "women",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f5242955752d",
+              "name": "Classic White Oxford Shirt",
+              "slug": "classic-white-oxford-shirt",
+              "price": 89.99,
+              "compareAtPrice": 120,
+              "thumbnail": "https://images.unsplash.com/photo-1617127365659-c47fa864d8bc",
+              "category": "men",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Categories (200)",
+      "passed": true,
+      "duration": 5,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "data": {
+          "categories": [
+            {
+              "_id": "Skirt",
+              "count": 1,
+              "subcategories": [
+                "dresses"
+              ]
+            },
+            {
+              "_id": "accessories",
+              "count": 3,
+              "subcategories": [
+                "watches",
+                "scarves",
+                "belts"
+              ]
+            },
+            {
+              "_id": "bags",
+              "count": 1,
+              "subcategories": [
+                "crossbody"
+              ]
+            },
+            {
+              "_id": "kids",
+              "count": 2,
+              "subcategories": [
+                "overalls",
+                "hoodies"
+              ]
+            },
+            {
+              "_id": "men",
+              "count": 3,
+              "subcategories": [
+                "blazers",
+                "jeans",
+                "shirts"
+              ]
+            },
+            {
+              "_id": "shoes",
+              "count": 1,
+              "subcategories": [
+                "sneakers"
+              ]
+            },
+            {
+              "_id": "women",
+              "count": 4,
+              "subcategories": [
+                "dresses",
+                "activewear",
+                "blouses"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Related Products (200)",
+      "passed": true,
+      "duration": 8,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "data": {
+          "products": [
+            {
+              "_id": "695e8ca746b0f5242955754d",
+              "name": "Leather Crossbody Bag",
+              "slug": "leather-crossbody-bag",
+              "price": 189.99,
+              "compareAtPrice": 249.99,
+              "thumbnail": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa",
+              "category": "bags",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f5242955755a",
+              "name": "Classic Leather Sneakers",
+              "slug": "classic-leather-sneakers",
+              "price": 129.99,
+              "compareAtPrice": 169.99,
+              "thumbnail": "https://images.unsplash.com/photo-1549298916-b41d501d3772",
+              "category": "shoes",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f52429557562",
+              "name": "Cashmere Scarf",
+              "slug": "cashmere-scarf",
+              "price": 159.99,
+              "compareAtPrice": 220,
+              "thumbnail": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62",
+              "category": "accessories",
+              "ratings": {
+                "average": 0,
+                "count": 0
+              }
+            },
+            {
+              "_id": "695e8ca746b0f52429557590",
+              "name": "Modern Minimalist Watch",
+              "price": 199.99,
+              "compareAtPrice": 249.99,
+              "category": "accessories"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Create Product - Without token (401)",
+      "passed": true,
+      "duration": 2,
+      "expected": "Status 401",
+      "actual": "Status 401",
+      "response": {
+        "success": false,
+        "message": "Not authorized - No token provided"
+      }
+    },
+    {
+      "name": "Create Product - With token (201/403/500)",
+      "passed": true,
+      "duration": 10,
+      "expected": "Status 201 (admin), 403 (non-admin), or 500 (validation error)",
+      "actual": "Status 500, message: next is not a function",
+      "response": {
+        "success": false,
+        "status": "error",
+        "error": {
+          "statusCode": 500,
+          "status": "error"
+        },
+        "message": "next is not a function",
+        "stack": "TypeError: next is not a function\n    at model.<anonymous> (file:///D:/fashion-website-frontend/fashion-website-backend/src/models/Product.js:325:3)\n    at Kareem.execPre (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\kareem\\index.js:63:39)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async model.$__save (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\mongoose\\lib\\model.js:369:5)\n    at async model.save (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\mongoose\\lib\\model.js:609:5)\n    at async D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\mongoose\\lib\\model.js:2722:9\n    at async Promise.all (index 0)\n    at async model.create (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\mongoose\\lib\\model.js:2707:11)\n    at async file:///D:/fashion-website-frontend/fashion-website-backend/src/controllers/productController.js:248:19"
+      }
+    },
+    {
+      "name": "Get Cart - Authenticated user (200)",
+      "passed": true,
+      "duration": 6,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "data": {
+          "cart": {
+            "items": [],
+            "subtotal": 0,
+            "total": 0,
+            "discount": 0,
+            "itemCount": 0,
+            "coupon": null
+          }
+        }
+      }
+    },
+    {
+      "name": "Get Cart - Guest user with session (200)",
+      "passed": true,
+      "duration": 4,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "data": {
+          "cart": {
+            "items": [],
+            "subtotal": 0,
+            "total": 0,
+            "discount": 0,
+            "itemCount": 0,
+            "coupon": null
+          }
+        }
+      }
+    },
+    {
+      "name": "Add to Cart - Valid product (200/400)",
+      "passed": true,
+      "duration": 12,
+      "expected": "Status 200/201 (success) or 400 (insufficient stock) or 500 (server error)",
+      "actual": "Status 500, message: next is not a function",
+      "response": {
+        "success": false,
+        "status": "error",
+        "error": {
+          "statusCode": 500,
+          "status": "error"
+        },
+        "message": "next is not a function",
+        "stack": "TypeError: next is not a function\n    at model.<anonymous> (file:///D:/fashion-website-frontend/fashion-website-backend/src/models/Cart.js:71:5)\n    at Kareem.execPre (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\kareem\\index.js:63:39)\n    at model._execDocumentPreHooks (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\mongoose\\lib\\document.js:2949:29)\n    at model.$__validate (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\mongoose\\lib\\document.js:2966:28)\n    at model.validate (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\mongoose\\lib\\document.js:2670:16)\n    at model.validateBeforeSave (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\mongoose\\lib\\plugins\\validateBeforeSave.js:34:18)\n    at Kareem.execPre (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\kareem\\index.js:63:39)\n    at model._execDocumentPreHooks (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\mongoose\\lib\\document.js:2949:29)\n    at model.$__save (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\mongoose\\lib\\model.js:369:16)\n    at model.save (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\mongoose\\lib\\model.js:609:16)"
+      }
+    },
+    {
+      "name": "Add to Cart - Non-existent product (404)",
+      "passed": true,
+      "duration": 8,
+      "expected": "Status 404, success: false",
+      "actual": "Status 404, success: false",
+      "response": {
+        "success": false,
+        "message": "Product not found"
+      }
+    },
+    {
+      "name": "Add to Cart - Zero quantity (400)",
+      "passed": true,
+      "duration": 10,
+      "expected": "Status 400 or 500, success: false",
+      "actual": "Status 500, success: false",
+      "response": {
+        "success": false,
+        "status": "error",
+        "error": {
+          "statusCode": 500,
+          "status": "error"
+        },
+        "message": "next is not a function",
+        "stack": "TypeError: next is not a function\n    at model.<anonymous> (file:///D:/fashion-website-frontend/fashion-website-backend/src/models/Cart.js:71:5)\n    at Kareem.execPre (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\kareem\\index.js:63:39)\n    at model._execDocumentPreHooks (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\mongoose\\lib\\document.js:2949:29)\n    at model.$__validate (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\mongoose\\lib\\document.js:2966:28)\n    at model.validate (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\mongoose\\lib\\document.js:2670:16)\n    at model.validateBeforeSave (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\mongoose\\lib\\plugins\\validateBeforeSave.js:34:18)\n    at Kareem.execPre (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\kareem\\index.js:63:39)\n    at model._execDocumentPreHooks (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\mongoose\\lib\\document.js:2949:29)\n    at model.$__save (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\mongoose\\lib\\model.js:369:16)\n    at model.save (D:\\fashion-website-frontend\\fashion-website-backend\\node_modules\\mongoose\\lib\\model.js:609:16)"
+      }
+    },
+    {
+      "name": "Apply Coupon - Invalid code (400/404)",
+      "passed": true,
+      "duration": 8,
+      "expected": "Status 400 or 404, success: false",
+      "actual": "Status 400, success: false",
+      "response": {
+        "success": false,
+        "message": "Cart is empty"
+      }
+    },
+    {
+      "name": "Validate Cart (200)",
+      "passed": true,
+      "duration": 6,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "data": {
+          "valid": true,
+          "cart": {
+            "items": [],
+            "subtotal": 0,
+            "total": 0,
+            "discount": 0,
+            "itemCount": 0,
+            "coupon": null
+          },
+          "issues": []
+        }
+      }
+    },
+    {
+      "name": "Clear Cart (200)",
+      "passed": true,
+      "duration": 6,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "message": "Cart cleared",
+        "data": {
+          "cart": {
+            "items": [],
+            "subtotal": 0,
+            "total": 0,
+            "discount": 0,
+            "itemCount": 0,
+            "coupon": null
+          }
+        }
+      }
+    },
+    {
+      "name": "Get Wishlist - Without token (401)",
+      "passed": true,
+      "duration": 3,
+      "expected": "Status 401",
+      "actual": "Status 401",
+      "response": {
+        "success": false,
+        "message": "Not authorized - No token provided"
+      }
+    },
+    {
+      "name": "Get Wishlist - Authenticated (200)",
+      "passed": true,
+      "duration": 6,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "data": {
+          "wishlist": [],
+          "count": 0
+        }
+      }
+    },
+    {
+      "name": "Add to Wishlist (200)",
+      "passed": true,
+      "duration": 15,
+      "expected": "Status 200 or 201, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "message": "Product added to wishlist",
+        "data": {
+          "productId": "695e8ca746b0f52429557578",
+          "count": 1
+        }
+      }
+    },
+    {
+      "name": "Check Wishlist - Product exists (200)",
+      "passed": true,
+      "duration": 6,
+      "expected": "Status 200, success: true, isInWishlist defined",
+      "actual": "Status 200, success: true, isInWishlist: true",
+      "response": {
+        "success": true,
+        "data": {
+          "productId": "695e8ca746b0f52429557578",
+          "isInWishlist": true
+        }
+      }
+    },
+    {
+      "name": "Toggle Wishlist (200)",
+      "passed": true,
+      "duration": 15,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "message": "Removed from wishlist",
+        "data": {
+          "productId": "695e8ca746b0f52429557578",
+          "isInWishlist": false,
+          "count": 0
+        }
+      }
+    },
+    {
+      "name": "Remove from Wishlist (200)",
+      "passed": true,
+      "duration": 11,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "message": "Product removed from wishlist",
+        "data": {
+          "productId": "695e8ca746b0f52429557578",
+          "count": 0
+        }
+      }
+    },
+    {
+      "name": "Clear Wishlist (200)",
+      "passed": true,
+      "duration": 10,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "message": "Wishlist cleared",
+        "data": {
+          "count": 0
+        }
+      }
+    },
+    {
+      "name": "Initialize Checkout (200 or 400 empty cart)",
+      "passed": true,
+      "duration": 8,
+      "expected": "Status 200 (cart has items) or 400 (empty cart)",
+      "actual": "Status 400, success: false",
+      "response": {
+        "success": false,
+        "message": "Cart is empty"
+      }
+    },
+    {
+      "name": "Get Shipping Rates (200)",
+      "passed": true,
+      "duration": 4,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "data": {
+          "rates": [
+            {
+              "id": "standard",
+              "name": "Standard Shipping",
+              "price": 5.99,
+              "estimatedDelivery": "2026-02-04T17:23:07.004Z",
+              "estimatedDays": "5-7 business days"
+            },
+            {
+              "id": "express",
+              "name": "Express Shipping",
+              "price": 14.99,
+              "estimatedDelivery": "2026-01-31T17:23:07.004Z",
+              "estimatedDays": "2-3 business days"
+            },
+            {
+              "id": "overnight",
+              "name": "Overnight Shipping",
+              "price": 29.99,
+              "estimatedDelivery": "2026-01-29T17:23:07.004Z",
+              "estimatedDays": "1 business day"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Calculate Tax (200)",
+      "passed": true,
+      "duration": 2,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "data": {
+          "taxRate": 0.1,
+          "taxAmount": 10
+        }
+      }
+    },
+    {
+      "name": "Validate Coupon - Invalid code (400/404)",
+      "passed": true,
+      "duration": 3,
+      "expected": "Status 400 or 404, success: false",
+      "actual": "Status 400, success: false",
+      "response": {
+        "success": false,
+        "message": "Invalid coupon code"
+      }
+    },
+    {
+      "name": "Complete Checkout - Missing required fields (400)",
+      "passed": true,
+      "duration": 7,
+      "expected": "Status 400, success: false",
+      "actual": "Status 400, success: false",
+      "response": {
+        "success": false,
+        "message": "Cart is empty"
+      }
+    },
+    {
+      "name": "Complete Checkout - Full data (200/201 or 400 empty cart)",
+      "passed": true,
+      "duration": 8,
+      "expected": "Status 200/201 (success) or 400 (empty cart)",
+      "actual": "Status 400",
+      "response": {
+        "success": false,
+        "message": "Cart is empty"
+      }
+    },
+    {
+      "name": "Get User Orders - Without token (401)",
+      "passed": true,
+      "duration": 2,
+      "expected": "Status 401",
+      "actual": "Status 401",
+      "response": {
+        "success": false,
+        "message": "Not authorized - No token provided"
+      }
+    },
+    {
+      "name": "Get User Orders - Authenticated (200)",
+      "passed": true,
+      "duration": 11,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "data": {
+          "orders": [],
+          "pagination": {
+            "currentPage": 1,
+            "totalPages": 0,
+            "totalOrders": 0,
+            "hasNextPage": false,
+            "hasPrevPage": false
+          }
+        }
+      }
+    },
+    {
+      "name": "Get Order by ID - Not found (404)",
+      "passed": true,
+      "duration": 6,
+      "expected": "Status 404",
+      "actual": "Status 404",
+      "response": {
+        "success": false,
+        "message": "Order not found"
+      }
+    },
+    {
+      "name": "Track Order - Invalid order number (404)",
+      "passed": true,
+      "duration": 3,
+      "expected": "Status 404",
+      "actual": "Status 404",
+      "response": {
+        "success": false,
+        "message": "Order not found. Please check your order number and email."
+      }
+    },
+    {
+      "name": "Get All Orders (Admin) - Check authorization (200 or 403)",
+      "passed": true,
+      "duration": 8,
+      "expected": "Status 200 (admin) or 403 (non-admin)",
+      "actual": "Status 200",
+      "response": {
+        "success": true,
+        "data": {
+          "orders": [],
+          "pagination": {
+            "currentPage": 1,
+            "totalPages": 0,
+            "totalOrders": 0,
+            "hasNextPage": false
+          }
+        }
+      }
+    },
+    {
+      "name": "Get Profile - Without token (401)",
+      "passed": true,
+      "duration": 2,
+      "expected": "Status 401",
+      "actual": "Status 401",
+      "response": {
+        "success": false,
+        "message": "Not authorized - No token provided"
+      }
+    },
+    {
+      "name": "Get Profile - Authenticated (200)",
+      "passed": {
+        "_id": "697a43f40461e7049747c21d",
+        "firstName": "Updated",
+        "lastName": "Name",
+        "email": "admin@example.com",
+        "role": "admin",
+        "isActive": true,
+        "avatar": null,
+        "phone": "0987654321",
+        "addresses": [],
+        "wishlist": [],
+        "createdAt": "2026-01-28T17:14:28.028Z",
+        "updatedAt": "2026-01-28T17:23:06.965Z"
+      },
+      "duration": 8,
+      "expected": "Status 200, success: true, user data exists",
+      "actual": "Status 200, success: true, user: exists",
+      "response": {
+        "success": true,
+        "data": {
+          "user": {
+            "_id": "697a43f40461e7049747c21d",
+            "firstName": "Updated",
+            "lastName": "Name",
+            "email": "admin@example.com",
+            "role": "admin",
+            "isActive": true,
+            "avatar": null,
+            "phone": "0987654321",
+            "addresses": [],
+            "wishlist": [],
+            "createdAt": "2026-01-28T17:14:28.028Z",
+            "updatedAt": "2026-01-28T17:23:06.965Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "Update Profile (200)",
+      "passed": true,
+      "duration": 8,
+      "expected": "Status 200, success: true",
+      "actual": "Status 200, success: true",
+      "response": {
+        "success": true,
+        "message": "Profile updated successfully",
+        "data": {
+          "user": {
+            "_id": "697a43f40461e7049747c21d",
+            "firstName": "Updated",
+            "lastName": "Name",
+            "email": "admin@example.com",
+            "role": "admin",
+            "isActive": true,
+            "avatar": null,
+            "phone": "0987654321",
+            "addresses": [],
+            "wishlist": [],
+            "createdAt": "2026-01-28T17:14:28.028Z",
+            "updatedAt": "2026-01-28T17:23:07.075Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "Change Password - Missing fields (400)",
+      "passed": true,
+      "duration": 5,
+      "expected": "Status 400, success: false",
+      "actual": "Status 400, success: false",
+      "response": {
+        "success": false,
+        "message": "All password fields are required",
+        "code": "MISSING_FIELDS"
+      }
+    },
+    {
+      "name": "Change Password - Passwords do not match (400)",
+      "passed": true,
+      "duration": 5,
+      "expected": "Status 400, success: false",
+      "actual": "Status 400, success: false",
+      "response": {
+        "success": false,
+        "message": "New passwords do not match",
+        "code": "PASSWORD_MISMATCH"
+      }
+    },
+    {
+      "name": "Change Password - Password too short (400)",
+      "passed": true,
+      "duration": 5,
+      "expected": "Status 400, success: false",
+      "actual": "Status 400, success: false",
+      "response": {
+        "success": false,
+        "message": "New password must be at least 8 characters",
+        "code": "PASSWORD_TOO_SHORT"
+      }
+    },
+    {
+      "name": "Change Password - Wrong current password (400)",
+      "passed": true,
+      "duration": 298,
+      "expected": "Status 400, success: false",
+      "actual": "Status 400, success: false",
+      "response": {
+        "success": false,
+        "message": "Current password is incorrect",
+        "code": "INVALID_PASSWORD"
+      }
+    }
+  ]
+}

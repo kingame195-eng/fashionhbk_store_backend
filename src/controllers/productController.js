@@ -26,7 +26,10 @@ export const getProducts = asyncHandler(async (req, res) => {
     featured,
   } = req.query;
 
-  if (category) queryObj.category = category;
+  if (category) {
+    // Support both exact match and case-insensitive slug match
+    queryObj.category = { $regex: new RegExp(`^${category}$`, "i") };
+  }
   if (subcategory) queryObj.subcategory = subcategory;
   if (brand) queryObj.brand = { $regex: brand, $options: "i" };
   if (tags) queryObj.tags = { $in: tags.split(",") };
@@ -307,7 +310,7 @@ export const deleteProduct = asyncHandler(async (req, res, next) => {
  * @access  Public
  */
 export const getCategories = asyncHandler(async (req, res) => {
-  const categories = await Product.aggregate([
+  const rawCategories = await Product.aggregate([
     { $match: { isActive: true } },
     {
       $group: {
@@ -318,6 +321,14 @@ export const getCategories = asyncHandler(async (req, res) => {
     },
     { $sort: { _id: 1 } },
   ]);
+
+  // Transform to include name and slug for frontend compatibility
+  const categories = rawCategories.map((cat) => ({
+    name: cat._id,
+    slug: cat._id ? cat._id.toLowerCase().replace(/\s+/g, "-") : "",
+    count: cat.count,
+    subcategories: cat.subcategories.filter(Boolean),
+  }));
 
   res.status(200).json({
     success: true,
