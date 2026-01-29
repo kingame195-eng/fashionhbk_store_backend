@@ -61,22 +61,31 @@ export const getProducts = asyncHandler(async (req, res) => {
   }
 
   // 2. SORTING
-  let sortBy = "-createdAt"; // Default: newest first
-  const { sort } = req.query;
+  let sortQuery = { createdAt: -1 }; // Default: newest first
+  const { sort, sortBy: sortByField, sortOrder } = req.query;
 
+  // Support legacy sort parameter (e.g., sort=price-asc)
   const sortOptions = {
-    "price-asc": "price",
-    "price-desc": "-price",
-    newest: "-createdAt",
-    oldest: "createdAt",
-    "name-asc": "name",
-    "name-desc": "-name",
-    rating: "-ratings.average",
-    popular: "-numReviews",
+    "price-asc": { price: 1 },
+    "price-desc": { price: -1 },
+    newest: { createdAt: -1 },
+    oldest: { createdAt: 1 },
+    "name-asc": { name: 1 },
+    "name-desc": { name: -1 },
+    rating: { "ratings.average": -1 },
+    popular: { numReviews: -1 },
   };
 
   if (sort && sortOptions[sort]) {
-    sortBy = sortOptions[sort];
+    sortQuery = sortOptions[sort];
+  }
+
+  // Support new sortBy + sortOrder parameters (e.g., sortBy=name&sortOrder=asc)
+  if (sortByField) {
+    const allowedSortFields = ["createdAt", "price", "name", "ratings.average", "numReviews"];
+    const field = allowedSortFields.includes(sortByField) ? sortByField : "createdAt";
+    const order = sortOrder === "asc" ? 1 : -1;
+    sortQuery = { [field]: order };
   }
 
   // 3. FIELD SELECTION
@@ -92,7 +101,7 @@ export const getProducts = asyncHandler(async (req, res) => {
 
   // Execute query
   const [products, total] = await Promise.all([
-    Product.find(queryObj).select(fields).sort(sortBy).skip(skip).limit(limit).lean(),
+    Product.find(queryObj).select(fields).sort(sortQuery).skip(skip).limit(limit).lean(),
     Product.countDocuments(queryObj),
   ]);
 
