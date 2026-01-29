@@ -99,9 +99,20 @@ export const getProducts = asyncHandler(async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 12;
   const skip = (page - 1) * limit;
 
+  // 5. Determine if we need collation for string sorting
+  const needsCollation = sortByField === "name" || sort === "name-asc" || sort === "name-desc";
+  const collationOptions = needsCollation ? { locale: "en", strength: 2 } : null;
+
   // Execute query
+  let productsQuery = Product.find(queryObj).select(fields).sort(sortQuery).skip(skip).limit(limit);
+  
+  // Apply collation for proper alphabetical sorting
+  if (collationOptions) {
+    productsQuery = productsQuery.collation(collationOptions);
+  }
+
   const [products, total] = await Promise.all([
-    Product.find(queryObj).select(fields).sort(sortQuery).skip(skip).limit(limit).lean(),
+    productsQuery.lean(),
     Product.countDocuments(queryObj),
   ]);
 
