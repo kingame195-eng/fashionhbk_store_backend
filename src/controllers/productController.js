@@ -101,38 +101,38 @@ export const getProducts = asyncHandler(async (req, res) => {
 
   // 5. Determine if we need collation for string sorting
   // Note: Collation cannot be used with $text search, so we'll sort in-memory for name when searching
-  const needsCollation = (sortByField === "name" || sort === "name-asc" || sort === "name-desc");
+  const needsCollation = sortByField === "name" || sort === "name-asc" || sort === "name-desc";
   const hasTextSearch = !!search;
   const collationOptions = needsCollation && !hasTextSearch ? { locale: "en", strength: 2 } : null;
 
   // Execute query
   let productsQuery = Product.find(queryObj).select(fields);
-  
+
   // Apply collation for proper alphabetical sorting (only when no text search)
   if (collationOptions) {
     productsQuery = productsQuery.collation(collationOptions);
   }
-  
+
   // If sorting by name with text search, we need to fetch more and sort in-memory
   const needsInMemorySort = needsCollation && hasTextSearch;
-  
+
   if (needsInMemorySort) {
     // Fetch all matching products for in-memory sort
     const allProducts = await productsQuery.lean();
-    
+
     // Sort in-memory by name
-    const sortDirection = (sortOrder === "asc" || sort === "name-asc") ? 1 : -1;
+    const sortDirection = sortOrder === "asc" || sort === "name-asc" ? 1 : -1;
     allProducts.sort((a, b) => {
       const nameA = (a.name || "").toLowerCase();
       const nameB = (b.name || "").toLowerCase();
       return nameA.localeCompare(nameB, "en") * sortDirection;
     });
-    
+
     // Apply pagination manually
     const paginatedProducts = allProducts.slice(skip, skip + limit);
     const total = allProducts.length;
     const totalPages = Math.ceil(total / limit);
-    
+
     return res.status(200).json({
       success: true,
       data: {
@@ -148,7 +148,7 @@ export const getProducts = asyncHandler(async (req, res) => {
       },
     });
   }
-  
+
   // Normal query with database sorting
   productsQuery = productsQuery.sort(sortQuery).skip(skip).limit(limit);
 

@@ -5,11 +5,15 @@ import crypto from "crypto";
 import { sendPasswordResetEmail } from "../utils/emailService.js";
 
 // Cookie options for tokens
+// Note: In production with different domains, sameSite must be 'none' with secure=true
+// In development, we use 'lax' for better compatibility
+const isProduction = process.env.NODE_ENV === "production";
 const cookieOptions = {
   httpOnly: true, // Prevents XSS attacks
-  secure: process.env.NODE_ENV === "production", // HTTPS only in production
-  sameSite: "strict", // Prevents CSRF attacks
+  secure: isProduction, // HTTPS only in production
+  sameSite: isProduction ? "none" : "lax", // 'none' required for cross-site cookies in production
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  path: "/", // Ensure cookie is sent with all requests
 };
 
 /**
@@ -131,8 +135,9 @@ export const logout = asyncHandler(async (req, res, next) => {
   // Clear cookie (need to match cookie options except maxAge)
   res.clearCookie("refreshToken", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+    path: "/",
   });
 
   res.status(200).json({

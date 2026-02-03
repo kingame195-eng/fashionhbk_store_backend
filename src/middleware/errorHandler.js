@@ -31,7 +31,7 @@ const handleDuplicateFieldsDB = (err) => {
  */
 const handleValidationErrorDB = (err) => {
   const errors = Object.values(err.errors).map((el) => el.message);
-  const message = `Invalid input data: ${errors.join(". ")}`;
+  const message = errors.length > 1 ? `Thông tin không hợp lệ: ${errors.join(". ")}` : errors[0];
   return new AppError(message, 400);
 };
 
@@ -67,6 +67,7 @@ const sendErrorProd = (err, res) => {
       success: false,
       status: err.status,
       message: err.message,
+      code: err.code || undefined,
     });
   } else {
     // Programming or unknown error: don't leak details

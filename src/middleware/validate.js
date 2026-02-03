@@ -56,13 +56,11 @@ export const validateRegistration = [
 
   body("password")
     .notEmpty()
-    .withMessage("Please create a password")
+    .withMessage("Vui lòng tạo mật khẩu")
     .isLength({ min: 8, max: 128 })
-    .withMessage("Password must be between 8 and 128 characters")
+    .withMessage("Mật khẩu phải có từ 8 đến 128 ký tự")
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-    .withMessage(
-      "Password must include at least one uppercase letter, one lowercase letter, and one number"
-    ),
+    .withMessage("Mật khẩu phải bao gồm ít nhất một chữ hoa, một chữ thường và một chữ số"),
 
   body("confirmPassword")
     .notEmpty()
