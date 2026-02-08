@@ -72,7 +72,7 @@ export const validateRegistration = [
       return true;
     }),
 
-  (req, res, next) => handleValidationErrors(req, res, next),
+  handleValidationErrors,
 ];
 
 /**
@@ -89,7 +89,7 @@ export const validateLogin = [
 
   body("password").notEmpty().withMessage("Please enter your password"),
 
-  (req, res, next) => handleValidationErrors(req, res, next),
+  handleValidationErrors,
 ];
 
 /**
@@ -112,7 +112,7 @@ export const validatePasswordChange = [
       return true;
     }),
 
-  (req, res, next) => handleValidationErrors(req, res, next),
+  handleValidationErrors,
 ];
 
 /**
@@ -121,7 +121,7 @@ export const validatePasswordChange = [
 export const validateObjectId = (paramName = "id") => [
   param(paramName).isMongoId().withMessage(`Invalid ${paramName} format`),
 
-  (req, res, next) => handleValidationErrors(req, res, next),
+  handleValidationErrors,
 ];
 
 /**
@@ -136,5 +136,5 @@ export const validatePagination = [
     .withMessage("Limit must be between 1 and 100")
     .toInt(),
 
-  (req, res, next) => handleValidationErrors(req, res, next),
+  handleValidationErrors,
 ];
