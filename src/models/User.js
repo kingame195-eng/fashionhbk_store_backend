@@ -100,21 +100,16 @@ userSchema.virtual("fullName").get(function () {
 });
 
 // Hash password before saving
-// Note: In Mongoose 9.x, async pre-save hooks should NOT use next()
-// They should either return a value or throw an error
-userSchema.pre("save", async function (next) {
+// Mongoose 9.x: async pre hooks should NOT use next() callback
+// Just return or throw an error
+userSchema.pre("save", async function () {
   // Only hash if password is modified
   if (!this.isModified("password")) {
-    return next();
+    return;
   }
 
-  try {
-    const salt = await bcrypt.genSalt(12);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error) {
-    next(error);
-  }
+  const salt = await bcrypt.genSalt(12);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
 // Compare password method
