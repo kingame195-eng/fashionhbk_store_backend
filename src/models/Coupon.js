@@ -290,18 +290,16 @@ couponSchema.statics.findValidCoupon = async function (code) {
 };
 
 // Pre-save validation
-couponSchema.pre("save", function (next) {
+couponSchema.pre("save", function () {
   // Validate discount value for percentage type
   if (this.discountType === "percentage" && this.discountValue > 100) {
-    next(new Error("Percentage discount cannot exceed 100%"));
+    throw new Error("Percentage discount cannot exceed 100%");
   }
 
   // Validate date range
   if (this.validUntil <= this.validFrom) {
-    next(new Error("Valid until date must be after valid from date"));
+    throw new Error("Valid until date must be after valid from date");
   }
-
-  next();
 });
 
 const Coupon = mongoose.model("Coupon", couponSchema);

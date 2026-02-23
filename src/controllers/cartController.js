@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
 import { asyncHandler } from "../middleware/errorHandler.js";
@@ -108,6 +109,14 @@ export const getCart = asyncHandler(async (req, res) => {
  */
 export const addToCart = asyncHandler(async (req, res) => {
   const { productId, quantity = 1, size, color } = req.body;
+
+  // Validate productId format
+  if (!productId || !mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid product ID format",
+    });
+  }
 
   // Find product
   const product = await Product.findById(productId);

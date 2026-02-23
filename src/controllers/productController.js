@@ -398,6 +398,23 @@ export const getCategories = asyncHandler(async (req, res) => {
 });
 
 /**
+ * @desc    Get all unique brands
+ * @route   GET /api/products/brands
+ * @access  Public
+ */
+export const getBrands = asyncHandler(async (req, res) => {
+  const brands = await Product.distinct("brand", { isActive: true });
+
+  // Filter out null/empty values and sort alphabetically
+  const filteredBrands = brands.filter(Boolean).sort();
+
+  res.status(200).json({
+    success: true,
+    data: { brands: filteredBrands },
+  });
+});
+
+/**
  * @desc    Update product stock
  * @route   PATCH /api/products/:id/stock
  * @access  Private/Admin

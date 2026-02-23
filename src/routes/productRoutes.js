@@ -10,6 +10,7 @@ import {
   updateProduct,
   deleteProduct,
   getCategories,
+  getBrands,
   updateStock,
 } from "../controllers/productController.js";
 import { protect, authorize } from "../middleware/auth.js";
@@ -24,6 +25,7 @@ router.get("/featured", getFeaturedProducts);
 router.get("/new-arrivals", getNewArrivals);
 router.get("/sale", getSaleProducts);
 router.get("/categories", getCategories);
+router.get("/brands", getBrands);
 router.get("/:identifier", getProduct);
 router.get("/:id/related", validateObjectId("id"), getRelatedProducts);
 

@@ -1,11 +1,14 @@
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+dotenv.config();
 
-const uri = "mongodb://admin:123456@localhost:27017/fashion_store?authSource=admin";
+const DB_NAME = "fashionstore_db";
 
 async function checkProducts() {
   try {
-    await mongoose.connect(uri);
-    console.log("Connected to MongoDB");
+    const uri = process.env.MONGODB_URI_LOCAL || process.env.MONGODB_URI;
+    await mongoose.connect(uri, { dbName: DB_NAME });
+    console.log(`Connected to MongoDB - Database: ${DB_NAME}`);
 
     const products = await mongoose.connection.db
       .collection("products")

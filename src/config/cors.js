@@ -23,14 +23,28 @@ const prodOrigins = [process.env.CLIENT_URL, process.env.CLIENT_URL_2].filter(Bo
 const allowedOrigins =
   process.env.NODE_ENV === "production" ? prodOrigins : [...prodOrigins, ...devOrigins];
 
+// Regex patterns for local network IPs
+const localNetworkPatterns = [
+  /^http:\/\/192\.168\.\d+\.\d+:\d+$/, // Local network 192.168.x.x
+  /^http:\/\/172\.\d+\.\d+\.\d+:\d+$/, // Docker/WSL network 172.x.x.x
+  /^http:\/\/10\.\d+\.\d+\.\d+:\d+$/, // Private network 10.x.x.x
+];
+
 export const corsOptions = {
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, curl, Postman, etc.)
     if (!origin) return callback(null, true);
 
-    // In development, also allow any localhost origin dynamically
+    // In development, allow localhost and local network IPs
     if (process.env.NODE_ENV !== "production") {
+      // Allow localhost origins
       if (origin.includes("localhost") || origin.includes("127.0.0.1")) {
+        return callback(null, true);
+      }
+      
+      // Allow local network IPs (192.168.x.x, 172.x.x.x, 10.x.x.x)
+      const isLocalNetwork = localNetworkPatterns.some((pattern) => pattern.test(origin));
+      if (isLocalNetwork) {
         return callback(null, true);
       }
     }

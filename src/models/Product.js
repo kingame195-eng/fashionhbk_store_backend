@@ -312,7 +312,7 @@ productSchema.virtual("primaryImage").get(function () {
 
 // PRE-SAVE MIDDLEWARE
 // Generate slug from name
-productSchema.pre("save", function (next) {
+productSchema.pre("save", function () {
   if (this.isModified("name")) {
     this.slug = slugify(this.name, {
       lower: true,
@@ -322,25 +322,22 @@ productSchema.pre("save", function (next) {
     // Add unique identifier to prevent duplicates
     this.slug = `${this.slug}-${Date.now().toString(36)}`;
   }
-  next();
 });
 
 // Set thumbnail from primary image
-productSchema.pre("save", function (next) {
+productSchema.pre("save", function () {
   if (!this.thumbnail && this.images?.length > 0) {
     const primary = this.images.find((img) => img.isPrimary);
     this.thumbnail = primary?.url || this.images[0].url;
   }
-  next();
 });
 
 // Update isOnSale based on dates
-productSchema.pre("save", function (next) {
+productSchema.pre("save", function () {
   const now = new Date();
   if (this.saleStartDate && this.saleEndDate) {
     this.isOnSale = now >= this.saleStartDate && now <= this.saleEndDate;
   }
-  next();
 });
 
 // STATIC METHODS

@@ -48,16 +48,34 @@ const userSchema = new mongoose.Schema(
     },
     addresses: [
       {
-        type: {
+        fullName: {
           type: String,
-          enum: ["shipping", "billing"],
-          default: "shipping",
+          required: true,
+          trim: true,
         },
-        street: String,
-        city: String,
-        state: String,
-        postalCode: String,
-        country: String,
+        phone: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        address: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        ward: {
+          type: String,
+          trim: true,
+        },
+        district: {
+          type: String,
+          trim: true,
+        },
+        city: {
+          type: String,
+          required: true,
+          trim: true,
+        },
         isDefault: {
           type: Boolean,
           default: false,

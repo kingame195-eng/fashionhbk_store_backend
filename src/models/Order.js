@@ -264,7 +264,7 @@ orderSchema.statics.generateOrderNumber = async function () {
 };
 
 // Pre-save: Add to status history when status changes
-orderSchema.pre("save", function (next) {
+orderSchema.pre("save", function () {
   if (this.isModified("status")) {
     this.statusHistory.push({
       status: this.status,
@@ -287,7 +287,6 @@ orderSchema.pre("save", function (next) {
         break;
     }
   }
-  next();
 });
 
 // Instance method: Can be cancelled

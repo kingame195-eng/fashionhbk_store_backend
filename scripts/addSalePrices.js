@@ -2,9 +2,11 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();
 
+const DB_NAME = "fashionstore_db";
+
 async function addSalePrices() {
-  await mongoose.connect(process.env.MONGODB_URI);
-  console.log("Connected to MongoDB");
+  await mongoose.connect(process.env.MONGODB_URI, { dbName: DB_NAME });
+  console.log(`Connected to MongoDB - Database: ${DB_NAME}`);
 
   const Product = mongoose.model("Product", new mongoose.Schema({}, { strict: false }));
 

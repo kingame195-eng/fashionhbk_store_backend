@@ -64,19 +64,16 @@ const cartSchema = new mongoose.Schema(
 );
 
 // Ensure either user or sessionId is present
-cartSchema.pre("validate", function (next) {
+cartSchema.pre("validate", function () {
   if (!this.user && !this.sessionId) {
-    next(new Error("Cart must have either a user or sessionId"));
-  } else {
-    next();
+    throw new Error("Cart must have either a user or sessionId");
   }
 });
 
 // Calculate totals before saving
-cartSchema.pre("save", function (next) {
+cartSchema.pre("save", function () {
   this.totalItems = this.items.reduce((sum, item) => sum + item.quantity, 0);
   this.totalPrice = this.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  next();
 });
 
 const Cart = mongoose.model("Cart", cartSchema);

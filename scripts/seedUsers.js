@@ -4,6 +4,8 @@ import User from "../src/models/User.js";
 
 dotenv.config();
 
+const DB_NAME = "fashionstore_db";
+
 const users = [
   {
     firstName: "Admin",
@@ -36,8 +38,8 @@ const seedUsers = async () => {
     // Connect to MongoDB
     const mongoUri = process.env.MONGODB_URI_LOCAL || process.env.MONGODB_URI;
     console.log("Connecting to MongoDB...");
-    await mongoose.connect(mongoUri);
-    console.log("MongoDB Connected!");
+    await mongoose.connect(mongoUri, { dbName: DB_NAME });
+    console.log(`MongoDB Connected to database: ${DB_NAME}`);
 
     // Clear existing users (optional)
     await User.deleteMany({});
