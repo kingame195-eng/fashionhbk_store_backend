@@ -41,7 +41,7 @@ export const corsOptions = {
       if (origin.includes("localhost") || origin.includes("127.0.0.1")) {
         return callback(null, true);
       }
-      
+
       // Allow local network IPs (192.168.x.x, 172.x.x.x, 10.x.x.x)
       const isLocalNetwork = localNetworkPatterns.some((pattern) => pattern.test(origin));
       if (isLocalNetwork) {
