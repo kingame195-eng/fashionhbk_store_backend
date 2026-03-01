@@ -1,6 +1,7 @@
 import Cart from "../models/Cart.js";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
+import Coupon from "../models/Coupon.js";
 
 /**
  * @desc    Initialize checkout
@@ -21,7 +22,7 @@ export const initializeCheckout = async (req, res, next) => {
         });
       }
       cartItems = cart.items;
-      subtotal = cart.subtotal;
+      subtotal = cart.totalPrice || 0;
     } else if (req.body.items) {
       // Guest checkout
       for (const item of req.body.items) {
@@ -166,15 +167,13 @@ export const validateCoupon = async (req, res, next) => {
   try {
     const { code, subtotal } = req.body;
 
-    // Demo coupons - in production, this would be from database
-    const coupons = {
-      WELCOME10: { type: "percentage", value: 10, minOrder: 0 },
-      SAVE20: { type: "percentage", value: 20, minOrder: 100 },
-      FREESHIP: { type: "shipping", value: 100, minOrder: 50 },
-      FLAT15: { type: "fixed", value: 15, minOrder: 75 },
-    };
-
-    const coupon = coupons[code.toUpperCase()];
+    // Demo coupons - use Coupon model from DB
+    let coupon = null;
+    try {
+      coupon = await Coupon.findValidCoupon(code.toUpperCase());
+    } catch (e) {
+      // findValidCoupon may throw
+    }
 
     if (!coupon) {
       return res.status(400).json({
@@ -183,31 +182,32 @@ export const validateCoupon = async (req, res, next) => {
       });
     }
 
-    if (subtotal < coupon.minOrder) {
+    if (subtotal < (coupon.minPurchase || 0)) {
       return res.status(400).json({
         success: false,
-        message: `Minimum order of $${coupon.minOrder} required for this coupon`,
+        message: `Minimum order of $${coupon.minPurchase} required for this coupon`,
       });
     }
 
     let discount = 0;
-    if (coupon.type === "percentage") {
-      discount = (subtotal * coupon.value) / 100;
-    } else if (coupon.type === "fixed") {
-      discount = coupon.value;
+    if (coupon.discountType === "percentage") {
+      discount = (subtotal * coupon.discountValue) / 100;
+      if (coupon.maxDiscount) discount = Math.min(discount, coupon.maxDiscount);
+    } else if (coupon.discountType === "fixed") {
+      discount = coupon.discountValue;
     }
 
     res.status(200).json({
       success: true,
       data: {
-        code: code.toUpperCase(),
-        type: coupon.type,
-        value: coupon.value,
+        code: coupon.code,
+        type: coupon.discountType,
+        value: coupon.discountValue,
         discount: Number(discount.toFixed(2)),
         message:
-          coupon.type === "percentage"
-            ? `${coupon.value}% off applied`
-            : `$${coupon.value} off applied`,
+          coupon.discountType === "percentage"
+            ? `${coupon.discountValue}% off applied`
+            : `$${coupon.discountValue} off applied`,
       },
     });
   } catch (error) {
@@ -300,19 +300,20 @@ export const completeCheckout = async (req, res, next) => {
     let discount = 0;
     let couponData = null;
     if (couponCode) {
-      const coupons = {
-        WELCOME10: { type: "percentage", value: 10 },
-        SAVE20: { type: "percentage", value: 20 },
-        FLAT15: { type: "fixed", value: 15 },
-      };
-      const coupon = coupons[couponCode.toUpperCase()];
-      if (coupon) {
-        discount = coupon.type === "percentage" ? (subtotal * coupon.value) / 100 : coupon.value;
-        couponData = {
-          code: couponCode.toUpperCase(),
-          discountType: coupon.type,
-          discountValue: coupon.value,
-        };
+      try {
+        const coupon = await Coupon.findValidCoupon(couponCode.toUpperCase());
+        if (coupon) {
+          discount = coupon.calculateDiscount(subtotal);
+          couponData = {
+            code: coupon.code,
+            discountType: coupon.discountType,
+            discountValue: coupon.discountValue,
+          };
+          // Record coupon usage
+          await coupon.recordUsage(req.user?._id);
+        }
+      } catch (e) {
+        // Coupon invalid or expired, continue without discount
       }
     }
 
@@ -352,16 +353,16 @@ export const completeCheckout = async (req, res, next) => {
 
     await order.save();
 
-    // Update product stock
+    // Update product stock and sold count
     for (const item of orderItems) {
       await Product.findByIdAndUpdate(item.product, {
-        $inc: { stock: -item.quantity },
+        $inc: { stock: -item.quantity, sold: item.quantity },
       });
     }
 
     // Clear cart
     if (req.user) {
-      await Cart.findOneAndUpdate({ user: req.user._id }, { items: [], subtotal: 0, total: 0 });
+      await Cart.findOneAndUpdate({ user: req.user._id }, { items: [], discount: 0, coupon: null });
     }
 
     res.status(201).json({

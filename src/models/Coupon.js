@@ -172,7 +172,7 @@ const couponSchema = new mongoose.Schema(
 );
 
 // Indexes
-couponSchema.index({ code: 1 });
+// Note: code already has unique:true in schema, no need for separate index on code
 couponSchema.index({ isActive: 1, validFrom: 1, validUntil: 1 });
 couponSchema.index({ validUntil: 1 });
 

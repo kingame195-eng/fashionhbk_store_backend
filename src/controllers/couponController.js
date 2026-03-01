@@ -245,7 +245,7 @@ export const getCoupon = asyncHandler(async (req, res, next) => {
   const coupon = await Coupon.findById(req.params.id)
     .populate("createdBy", "firstName lastName")
     .populate("usedBy.user", "firstName lastName email")
-    .populate("usedBy.orderId", "orderNumber totalAmount");
+    .populate("usedBy.orderId", "orderNumber total");
 
   if (!coupon) {
     return next(new AppError("Coupon not found", 404));
@@ -375,19 +375,15 @@ export const getCouponStats = asyncHandler(async (req, res, next) => {
   }
 
   // Get orders that used this coupon
-  const orders = await Order.find({ couponCode: coupon.code }).select(
-    "totalAmount discount createdAt"
-  );
+  const orders = await Order.find({ couponCode: coupon.code }).select("total discount createdAt");
 
   const stats = {
     totalUses: coupon.usedCount,
     remainingUses: coupon.usageLimit ? coupon.usageLimit - coupon.usedCount : "Unlimited",
     totalDiscountGiven: orders.reduce((sum, order) => sum + (order.discount || 0), 0),
-    totalOrderValue: orders.reduce((sum, order) => sum + order.totalAmount, 0),
+    totalOrderValue: orders.reduce((sum, order) => sum + order.total, 0),
     averageOrderValue:
-      orders.length > 0
-        ? orders.reduce((sum, order) => sum + order.totalAmount, 0) / orders.length
-        : 0,
+      orders.length > 0 ? orders.reduce((sum, order) => sum + order.total, 0) / orders.length : 0,
     usageByDate: coupon.usedBy.reduce((acc, usage) => {
       const date = usage.usedAt.toISOString().split("T")[0];
       acc[date] = (acc[date] || 0) + 1;

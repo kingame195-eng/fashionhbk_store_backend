@@ -2,6 +2,7 @@ import express from "express";
 import {
   getProducts,
   getProduct,
+  getProductById,
   getFeaturedProducts,
   getNewArrivals,
   getSaleProducts,
@@ -26,6 +27,7 @@ router.get("/new-arrivals", getNewArrivals);
 router.get("/sale", getSaleProducts);
 router.get("/categories", getCategories);
 router.get("/brands", getBrands);
+router.get("/id/:id", validateObjectId("id"), getProductById);
 router.get("/:identifier", getProduct);
 router.get("/:id/related", validateObjectId("id"), getRelatedProducts);
 

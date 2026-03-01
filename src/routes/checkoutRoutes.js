@@ -1,6 +1,12 @@
 import express from "express";
 import { optionalAuth } from "../middleware/auth.js";
 import {
+  validateCheckoutInitialize,
+  validateCompleteCheckout,
+  validateCouponCode,
+  validateObjectId,
+} from "../middleware/validate.js";
+import {
   initializeCheckout,
   getShippingRates,
   calculateTax,
@@ -12,7 +18,7 @@ import {
 const router = express.Router();
 
 // Initialize checkout
-router.post("/initialize", optionalAuth, initializeCheckout);
+router.post("/initialize", optionalAuth, validateCheckoutInitialize, initializeCheckout);
 
 // Get shipping rates
 router.post("/shipping-rates", getShippingRates);
@@ -21,10 +27,10 @@ router.post("/shipping-rates", getShippingRates);
 router.post("/calculate-tax", calculateTax);
 
 // Validate coupon
-router.post("/validate-coupon", validateCoupon);
+router.post("/validate-coupon", validateCouponCode, validateCoupon);
 
 // Complete checkout
-router.post("/complete", optionalAuth, completeCheckout);
+router.post("/complete", optionalAuth, validateCompleteCheckout, completeCheckout);
 
 // Get order confirmation
 router.get("/order/:orderNumber", optionalAuth, getOrderConfirmation);

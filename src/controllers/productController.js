@@ -27,14 +27,28 @@ export const getProducts = asyncHandler(async (req, res) => {
   } = req.query;
 
   if (category) {
-    // Support both exact match and case-insensitive slug match
-    queryObj.category = { $regex: new RegExp(`^${category}$`, "i") };
+    // Escape special regex chars to prevent ReDoS / injection
+    const escaped = category.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    queryObj.category = { $regex: new RegExp(`^${escaped}$`, "i") };
   }
   if (subcategory) queryObj.subcategory = subcategory;
-  if (brand) queryObj.brand = { $regex: brand, $options: "i" };
+  if (brand) {
+    const escapedBrand = brand.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    queryObj.brand = { $regex: escapedBrand, $options: "i" };
+  }
   if (tags) queryObj.tags = { $in: tags.split(",") };
-  if (inStock === "true") queryObj.stock = { $gt: 0 };
-  if (onSale === "true") queryObj.isOnSale = true;
+  if (inStock === "true") {
+    queryObj.$or = [
+      { stock: { $gt: 0 } },
+      { "sizes.stock": { $gt: 0 } },
+      { "colors.stock": { $gt: 0 } },
+    ];
+  }
+  if (onSale === "true") {
+    queryObj.isOnSale = true;
+    queryObj.compareAtPrice = { $exists: true, $gt: 0 };
+    queryObj.$expr = { $lt: ["$price", "$compareAtPrice"] };
+  }
   if (featured === "true") queryObj.isFeatured = true;
 
   // Price range filter
@@ -196,6 +210,24 @@ export const getProduct = asyncHandler(async (req, res, next) => {
   if (!product) {
     product = await Product.findOne({ slug: identifier, isActive: true });
   }
+
+  if (!product) {
+    return next(new AppError("Product not found", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    data: { product },
+  });
+});
+
+/**
+ * @desc    Get a single product by ID
+ * @route   GET /api/products/id/:id
+ * @access  Public
+ */
+export const getProductById = asyncHandler(async (req, res, next) => {
+  const product = await Product.findOne({ _id: req.params.id, isActive: true });
 
   if (!product) {
     return next(new AppError("Product not found", 404));

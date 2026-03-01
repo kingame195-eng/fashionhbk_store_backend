@@ -9,6 +9,7 @@ import {
   removeCoupon,
   mergeGuestCart,
   validateCart,
+  syncCart,
 } from "../controllers/cartController.js";
 import { protect, optionalAuth } from "../middleware/auth.js";
 
@@ -31,6 +32,9 @@ router.delete("/coupon", optionalAuth, removeCoupon);
 
 // Merge guest cart after login - requires authentication
 router.post("/merge", protect, mergeGuestCart);
+
+// Sync local cart to server
+router.post("/sync", optionalAuth, syncCart);
 
 // Validate cart - support both authenticated and guest users
 router.post("/validate", optionalAuth, validateCart);

@@ -227,7 +227,7 @@ const orderSchema = new mongoose.Schema(
 );
 
 // Indexes for better query performance
-orderSchema.index({ orderNumber: 1 });
+// Note: orderNumber already has unique:true in schema, no need for separate index
 orderSchema.index({ user: 1, createdAt: -1 });
 orderSchema.index({ status: 1, createdAt: -1 });
 orderSchema.index({ guestEmail: 1 });

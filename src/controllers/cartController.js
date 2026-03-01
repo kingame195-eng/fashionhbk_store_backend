@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
+import Coupon from "../models/Coupon.js";
 import { asyncHandler } from "../middleware/errorHandler.js";
 
 // ============================================
@@ -306,15 +307,14 @@ export const applyCoupon = asyncHandler(async (req, res) => {
     });
   }
 
-  // TODO: Implement coupon validation from Coupon model
-  // For now, use mock validation
-  const validCoupons = {
-    SAVE10: { discount: 10, type: "percentage" },
-    SAVE20: { discount: 20, type: "percentage" },
-    FLAT50: { discount: 50, type: "fixed" },
-  };
+  // Validate coupon from database
+  let coupon;
+  try {
+    coupon = await Coupon.findValidCoupon(code.toUpperCase());
+  } catch (e) {
+    // findValidCoupon may throw
+  }
 
-  const coupon = validCoupons[code.toUpperCase()];
   if (!coupon) {
     return res.status(400).json({
       success: false,
@@ -322,13 +322,27 @@ export const applyCoupon = asyncHandler(async (req, res) => {
     });
   }
 
-  // Calculate discount
-  let discountAmount = 0;
-  if (coupon.type === "percentage") {
-    discountAmount = (cart.totalPrice * coupon.discount) / 100;
-  } else {
-    discountAmount = coupon.discount;
+  // Check if user can use this coupon
+  if (req.user) {
+    const canUse = coupon.canBeUsedBy(req.user._id);
+    if (!canUse) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already used this coupon",
+      });
+    }
   }
+
+  // Check minimum purchase
+  if (coupon.minPurchase && cart.totalPrice < coupon.minPurchase) {
+    return res.status(400).json({
+      success: false,
+      message: `Minimum purchase of $${coupon.minPurchase} required`,
+    });
+  }
+
+  // Calculate discount
+  const discountAmount = coupon.calculateDiscount(cart.totalPrice);
 
   cart.coupon = code.toUpperCase();
   cart.discount = Math.min(discountAmount, cart.totalPrice); // Don't exceed cart total
@@ -544,5 +558,72 @@ export const validateCart = asyncHandler(async (req, res) => {
       cart: formatCartResponse(cart),
       issues,
     },
+  });
+});
+
+/**
+ * Sync local cart items to server (after login)
+ * POST /api/cart/sync
+ */
+export const syncCart = asyncHandler(async (req, res) => {
+  const { items } = req.body;
+
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Items array is required",
+    });
+  }
+
+  const cart = await getOrCreateCart(req);
+  if (!cart) {
+    return res.status(400).json({
+      success: false,
+      message: "Unable to identify cart. Please provide session ID or login.",
+    });
+  }
+
+  for (const item of items) {
+    const { productId, quantity = 1, size, color } = item;
+
+    if (!productId || !mongoose.Types.ObjectId.isValid(productId)) continue;
+
+    const product = await Product.findById(productId);
+    if (!product || !product.isActive) continue;
+
+    // Check if item already exists in cart
+    const existingIndex = cart.items.findIndex(
+      (ci) =>
+        ci.product.toString() === productId &&
+        (ci.size || "") === (size || "") &&
+        (ci.color || "") === (color || "")
+    );
+
+    if (existingIndex > -1) {
+      // Update quantity (take the larger value)
+      cart.items[existingIndex].quantity = Math.max(cart.items[existingIndex].quantity, quantity);
+      cart.items[existingIndex].price = product.price;
+    } else {
+      cart.items.push({
+        product: productId,
+        quantity: Math.min(quantity, product.stock || 99),
+        price: product.price,
+        size,
+        color,
+      });
+    }
+  }
+
+  await cart.save();
+
+  await cart.populate({
+    path: "items.product",
+    select: "name price images slug stock",
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Cart synced successfully",
+    data: { cart: formatCartResponse(cart) },
   });
 });

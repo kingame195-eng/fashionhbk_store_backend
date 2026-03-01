@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import logger from "../utils/logger.js";
 
 dotenv.config();
 
@@ -13,25 +14,25 @@ const connectDB = async () => {
 
     // Log URI for debugging (hide password)
     const safeUri = uri?.replace(/:([^:@]+)@/, ":****@");
-    console.log(`Connecting to MongoDB: ${safeUri}`);
-    console.log(`Target database: ${DB_NAME}`);
+    logger.db(`Connecting to MongoDB: ${safeUri}`);
+    logger.db(`Target database: ${DB_NAME}`);
 
     // Force database name to fashionstore_db
     const conn = await mongoose.connect(uri, {
       dbName: DB_NAME, // Explicitly set database name
     });
 
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
-    console.log(`Database: ${conn.connection.name}`);
+    logger.db(`MongoDB Connected: ${conn.connection.host}`);
+    logger.db(`Database: ${conn.connection.name}`);
 
     // Verify we're connected to the right database
     if (conn.connection.name !== DB_NAME) {
-      console.error(
+      logger.warn(
         `WARNING: Connected to wrong database! Expected: ${DB_NAME}, Got: ${conn.connection.name}`
       );
     }
   } catch (error) {
-    console.error(`MongoDB Connection Error: ${error.message}`);
+    logger.error(`MongoDB Connection Error: ${error.message}`);
     process.exit(1);
   }
 };

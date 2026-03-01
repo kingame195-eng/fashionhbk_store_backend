@@ -94,6 +94,36 @@ const userSchema = new mongoose.Schema(
       type: Date,
       select: false,
     },
+    emailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    emailVerificationToken: {
+      type: String,
+      select: false,
+    },
+    emailVerificationExpires: {
+      type: Date,
+      select: false,
+    },
+    preferences: {
+      newsletter: {
+        type: Boolean,
+        default: true,
+      },
+      notifications: {
+        type: Boolean,
+        default: true,
+      },
+      language: {
+        type: String,
+        default: "en",
+      },
+      currency: {
+        type: String,
+        default: "USD",
+      },
+    },
     wishlist: [
       {
         product: {
@@ -140,6 +170,10 @@ userSchema.methods.toJSON = function () {
   const user = this.toObject();
   delete user.password;
   delete user.refreshToken;
+  delete user.passwordResetToken;
+  delete user.passwordResetExpires;
+  delete user.emailVerificationToken;
+  delete user.emailVerificationExpires;
   delete user.__v;
   return user;
 };

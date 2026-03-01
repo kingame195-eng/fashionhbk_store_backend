@@ -1,23 +1,24 @@
-// backend/src/utils/emailService.js
+﻿// backend/src/utils/emailService.js
 import nodemailer from "nodemailer";
+import logger from "./logger.js";
 
 /**
  * Email Service
- * Sử dụng Nodemailer để gửi emails
+ * Sá»­ dá»¥ng Nodemailer Ä‘á»ƒ gá»­i emails
  *
- * Cấu hình trong .env:
+ * Cáº¥u hÃ¬nh trong .env:
  * - SMTP_HOST=smtp.gmail.com
  * - SMTP_PORT=587
  * - SMTP_USER=your-email@gmail.com
- * - SMTP_PASS=your-app-password (không phải password thường!)
+ * - SMTP_PASS=your-app-password (khÃ´ng pháº£i password thÆ°á»ng!)
  * - FROM_EMAIL=noreply@yoursite.com
  */
 
-// Tạo transporter (kết nối SMTP)
+// Táº¡o transporter (káº¿t ná»‘i SMTP)
 const createTransporter = () => {
-  // Nếu không có config SMTP, dùng console log (development)
+  // Náº¿u khÃ´ng cÃ³ config SMTP, dÃ¹ng console log (development)
   if (!process.env.SMTP_HOST || !process.env.SMTP_USER) {
-    console.warn("⚠️ SMTP not configured. Emails will be logged to console instead.");
+    logger.warn("SMTP not configured. Emails will be logged to console instead.");
     return null;
   }
 
@@ -33,7 +34,7 @@ const createTransporter = () => {
 };
 
 /**
- * Gửi email
+ * Gá»­i email
  * @param {Object} options - { to, subject, text, html }
  */
 export const sendEmail = async ({ to, subject, text, html }) => {
@@ -49,34 +50,30 @@ export const sendEmail = async ({ to, subject, text, html }) => {
 
   // Development mode: log ra console
   if (!transporter) {
-    console.log("\n📧 ========== EMAIL (Dev Mode) ==========");
-    console.log(`To: ${to}`);
-    console.log(`Subject: ${subject}`);
-    console.log(`Body: ${text || html}`);
-    console.log("==========================================\n");
+    logger.email(to, subject, text || html);
     return { success: true, mode: "console" };
   }
 
-  // Production mode: gửi email thật
+  // Production mode: gá»­i email tháº­t
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log(`✅ Email sent: ${info.messageId}`);
+    logger.info(`Email sent: ${info.messageId}`);
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error("❌ Email send failed:", error.message);
+    logger.error("Email send failed", error);
     throw error;
   }
 };
 
 /**
- * Gửi email reset password
- * @param {string} email - Email người nhận
- * @param {string} resetToken - Token để reset password
- * @param {string} resetUrl - URL đầy đủ để reset (optional)
+ * Gá»­i email reset password
+ * @param {string} email - Email ngÆ°á»i nháº­n
+ * @param {string} resetToken - Token Ä‘á»ƒ reset password
+ * @param {string} resetUrl - URL Ä‘áº§y Ä‘á»§ Ä‘á»ƒ reset (optional)
  */
 export const sendPasswordResetEmail = async (email, resetToken, resetUrl) => {
   const clientUrl = process.env.CLIENT_URL || "http://localhost:3000";
-  const url = resetUrl || `${clientUrl}/reset-password?token=${resetToken}`;
+  const url = resetUrl || `${clientUrl}/reset-password/${resetToken}`;
 
   const subject = "Password Reset Request - Fashion Store";
 
@@ -103,7 +100,7 @@ If you didn't request this, please ignore this email.
     .button { 
       display: inline-block; 
       padding: 12px 30px; 
-      background: #c9a962; 
+      background: #D0B674; 
       color: #fff !important; 
       text-decoration: none; 
       border-radius: 4px;
@@ -138,9 +135,9 @@ If you didn't request this, please ignore this email.
 };
 
 /**
- * Gửi email xác nhận đơn hàng
- * @param {string} email - Email người nhận
- * @param {Object} order - Thông tin đơn hàng
+ * Gá»­i email xÃ¡c nháº­n Ä‘Æ¡n hÃ ng
+ * @param {string} email - Email ngÆ°á»i nháº­n
+ * @param {Object} order - ThÃ´ng tin Ä‘Æ¡n hÃ ng
  */
 export const sendOrderConfirmationEmail = async (email, order) => {
   const subject = `Order Confirmation #${order.orderNumber} - Fashion Store`;
@@ -148,7 +145,7 @@ export const sendOrderConfirmationEmail = async (email, order) => {
   const itemsList = order.items
     .map(
       (item) =>
-        `- ${item.name} (${item.variant?.size || "N/A"}, ${item.variant?.color || "N/A"}) x${item.quantity}: $${item.price * item.quantity}`
+        `- ${item.name} (${item.size || "N/A"}, ${item.color || "N/A"}) x${item.quantity}: $${item.price * item.quantity}`
     )
     .join("\n");
 
@@ -162,14 +159,14 @@ Items:
 ${itemsList}
 
 Subtotal: $${order.subtotal}
-Shipping: $${order.shipping}
+Shipping: $${order.shippingCost}
 Tax: $${order.tax}
 Total: $${order.total}
 
 Shipping to:
-${order.shippingAddress.fullName}
-${order.shippingAddress.street}
-${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.zipCode}
+${order.shippingAddress.firstName} ${order.shippingAddress.lastName}
+${order.shippingAddress.address}
+${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.postalCode}
 ${order.shippingAddress.country}
 
 Thank you for shopping with us!
@@ -179,9 +176,9 @@ Thank you for shopping with us!
 };
 
 /**
- * Gửi email welcome cho user mới
- * @param {string} email - Email người nhận
- * @param {string} name - Tên người dùng
+ * Gá»­i email welcome cho user má»›i
+ * @param {string} email - Email ngÆ°á»i nháº­n
+ * @param {string} name - TÃªn ngÆ°á»i dÃ¹ng
  */
 export const sendWelcomeEmail = async (email, name) => {
   const subject = "Welcome to Fashion Store!";
@@ -198,7 +195,7 @@ export const sendWelcomeEmail = async (email, name) => {
     .button { 
       display: inline-block; 
       padding: 12px 30px; 
-      background: #c9a962; 
+      background: #D0B674; 
       color: #fff !important; 
       text-decoration: none; 
       border-radius: 4px;
@@ -237,8 +234,8 @@ export const sendWelcomeEmail = async (email, name) => {
 };
 
 /**
- * Gửi email xác nhận thanh toán
- * @param {string} email - Email người nhận
+ * Gá»­i email xÃ¡c nháº­n thanh toÃ¡n
+ * @param {string} email - Email ngÆ°á»i nháº­n
  * @param {Object} data - { orderNumber, amount, paymentMethod }
  */
 export const sendPaymentConfirmationEmail = async (email, data) => {
@@ -265,7 +262,7 @@ export const sendPaymentConfirmationEmail = async (email, data) => {
       <h1>Fashion Store</h1>
     </div>
     <div class="content">
-      <p class="success">✓ Payment Successful!</p>
+      <p class="success">âœ“ Payment Successful!</p>
       <div class="details">
         <p><strong>Order Number:</strong> ${orderNumber}</p>
         <p><strong>Amount Paid:</strong> $${amount}</p>
@@ -291,8 +288,8 @@ export const sendPaymentConfirmationEmail = async (email, data) => {
 };
 
 /**
- * Gửi email hướng dẫn chuyển khoản
- * @param {string} email - Email người nhận
+ * Gá»­i email hÆ°á»›ng dáº«n chuyá»ƒn khoáº£n
+ * @param {string} email - Email ngÆ°á»i nháº­n
  * @param {Object} data - { orderNumber, amount, transferReference, bankInfo, expiresAt }
  */
 export const sendBankTransferEmail = async (email, data) => {
@@ -308,7 +305,7 @@ export const sendBankTransferEmail = async (email, data) => {
     .container { max-width: 600px; margin: 0 auto; padding: 20px; }
     .header { background: #1a1a1a; color: #fff; padding: 20px; text-align: center; }
     .content { padding: 30px; background: #f9f9f9; }
-    .bank-info { background: #fff; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #c9a962; }
+    .bank-info { background: #fff; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #D0B674; }
     .warning { background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0; }
     .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
   </style>
@@ -332,7 +329,7 @@ export const sendBankTransferEmail = async (email, data) => {
       </div>
       
       <div class="warning">
-        ⚠️ <strong>Important:</strong> Please include the transfer reference in your payment description.
+        âš ï¸ <strong>Important:</strong> Please include the transfer reference in your payment description.
         <br>Payment must be completed before: ${new Date(expiresAt).toLocaleString()}
       </div>
     </div>
@@ -353,8 +350,8 @@ export const sendBankTransferEmail = async (email, data) => {
 };
 
 /**
- * Gửi email cập nhật trạng thái đơn hàng
- * @param {string} email - Email người nhận
+ * Gá»­i email cáº­p nháº­t tráº¡ng thÃ¡i Ä‘Æ¡n hÃ ng
+ * @param {string} email - Email ngÆ°á»i nháº­n
  * @param {Object} data - { orderNumber, status, trackingNumber, estimatedDelivery }
  */
 export const sendOrderStatusEmail = async (email, data) => {
@@ -380,7 +377,7 @@ export const sendOrderStatusEmail = async (email, data) => {
     .header { background: #1a1a1a; color: #fff; padding: 20px; text-align: center; }
     .content { padding: 30px; background: #f9f9f9; }
     .status-box { background: #fff; padding: 20px; margin: 20px 0; border-radius: 8px; text-align: center; }
-    .status { font-size: 18px; color: #c9a962; text-transform: uppercase; }
+    .status { font-size: 18px; color: #D0B674; text-transform: uppercase; }
     .tracking { background: #e9ecef; padding: 15px; border-radius: 8px; margin: 20px 0; }
     .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
   </style>
@@ -426,8 +423,8 @@ export const sendOrderStatusEmail = async (email, data) => {
 };
 
 /**
- * Gửi email thông báo hoàn tiền
- * @param {string} email - Email người nhận
+ * Gá»­i email thÃ´ng bÃ¡o hoÃ n tiá»n
+ * @param {string} email - Email ngÆ°á»i nháº­n
  * @param {Object} data - { orderNumber, amount, approved, adminNotes }
  */
 export const sendRefundEmail = async (email, data) => {
@@ -457,7 +454,7 @@ export const sendRefundEmail = async (email, data) => {
     </div>
     <div class="content">
       <p class="result ${approved ? "approved" : "rejected"}">
-        ${approved ? "✓ Refund Approved" : "✗ Refund Rejected"}
+        ${approved ? "âœ“ Refund Approved" : "âœ— Refund Rejected"}
       </p>
       
       <div class="details">

@@ -5,17 +5,23 @@ import cookieParser from "cookie-parser";
 import connectDB from "./config/database.js";
 import routes from "./routes/index.js";
 import { corsOptions } from "./config/cors.js";
-import { helmetConfig, mongoSanitizeConfig, xssCleanConfig, hppConfig } from "./config/security.js";
+import {
+  helmetConfig,
+  mongoSanitizeConfig,
+  xssCleanConfig,
+  hppConfig,
+  generalLimiter,
+} from "./config/security.js";
 import { globalErrorHandler } from "./middleware/errorHandler.js";
 import { securityAuditMiddleware } from "./utils/securityLogger.js";
+import logger from "./utils/logger.js";
 
 // Load environment variables
 dotenv.config();
 
 // Handle uncaught exceptions (must be at the top)
 process.on("uncaughtException", (err) => {
-  console.error("UNCAUGHT EXCEPTION! Shutting down...");
-  console.error(err.name, err.message);
+  logger.error("UNCAUGHT EXCEPTION! Shutting down...", err);
   process.exit(1);
 });
 
@@ -59,6 +65,9 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
+// 10. Rate Limiting - Apply to all API routes
+app.use("/api", generalLimiter);
+
 // API ROUTES
 app.use("/api", routes);
 
@@ -78,15 +87,14 @@ app.use(globalErrorHandler);
 const PORT = process.env.PORT || 5000;
 const HOST = process.env.HOST || "0.0.0.0";
 const server = app.listen(PORT, HOST, () => {
-  console.log(
+  logger.info(
     `Server running in ${process.env.NODE_ENV || "development"} mode on http://${HOST}:${PORT}`
   );
 });
 
 // Handle unhandled promise rejections
 process.on("unhandledRejection", (err) => {
-  console.error("UNHANDLED REJECTION! Shutting down...");
-  console.error(err.name, err.message);
+  logger.error("UNHANDLED REJECTION! Shutting down...", err);
   server.close(() => {
     process.exit(1);
   });

@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import logger from "./logger.js";
 
 const LOG_DIR = path.join(process.cwd(), "logs");
 const SECURITY_LOG = path.join(LOG_DIR, "security.log");
@@ -22,12 +23,12 @@ export const logSecurityEvent = (eventType, details) => {
     }) + "\n";
 
   fs.appendFile(SECURITY_LOG, logEntry, (err) => {
-    if (err) console.error("Failed to write security log:", err);
+    if (err) logger.error("Failed to write security log:", err);
   });
 
   // Also log to console in development
   if (process.env.NODE_ENV === "development") {
-    console.log(`[SECURITY] ${eventType}:`, details);
+    logger.security(eventType, details);
   }
 };
 

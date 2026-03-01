@@ -3,6 +3,7 @@ import Product from "../models/Product.js";
 import User from "../models/User.js";
 import Review from "../models/Review.js";
 import Coupon from "../models/Coupon.js";
+import logger from "../utils/logger.js";
 
 /**
  * @desc    Lấy tổng quan dashboard
@@ -43,21 +44,21 @@ export const getDashboardOverview = async (req, res) => {
       }),
       // Revenue
       Order.aggregate([
-        { $match: { paymentStatus: "completed" } },
-        { $group: { _id: null, total: { $sum: "$totalAmount" } } },
+        { $match: { paymentStatus: "paid" } },
+        { $group: { _id: null, total: { $sum: "$total" } } },
       ]),
       Order.aggregate([
-        { $match: { paymentStatus: "completed", createdAt: { $gte: startOfMonth } } },
-        { $group: { _id: null, total: { $sum: "$totalAmount" } } },
+        { $match: { paymentStatus: "paid", createdAt: { $gte: startOfMonth } } },
+        { $group: { _id: null, total: { $sum: "$total" } } },
       ]),
       Order.aggregate([
         {
           $match: {
-            paymentStatus: "completed",
+            paymentStatus: "paid",
             createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth },
           },
         },
-        { $group: { _id: null, total: { $sum: "$totalAmount" } } },
+        { $group: { _id: null, total: { $sum: "$total" } } },
       ]),
       // Products
       Product.countDocuments({ isActive: true }),
@@ -69,7 +70,7 @@ export const getDashboardOverview = async (req, res) => {
       // Reviews
       Review.countDocuments({ status: "pending" }),
       // Coupons
-      Coupon.countDocuments({ isActive: true, endDate: { $gte: new Date() } }),
+      Coupon.countDocuments({ isActive: true, validUntil: { $gte: new Date() } }),
     ]);
 
     // Tính growth rates
@@ -149,15 +150,15 @@ export const getRevenueStats = async (req, res) => {
       {
         $match: {
           createdAt: { $gte: startDate },
-          paymentStatus: "completed",
+          paymentStatus: "paid",
         },
       },
       {
         $group: {
           _id: groupFormat,
-          revenue: { $sum: "$totalAmount" },
+          revenue: { $sum: "$total" },
           orders: { $sum: 1 },
-          avgOrderValue: { $avg: "$totalAmount" },
+          avgOrderValue: { $avg: "$total" },
         },
       },
       { $sort: { _id: 1 } },
@@ -192,7 +193,7 @@ export const getTopProducts = async (req, res) => {
     const { limit = 10 } = req.query;
 
     const topProducts = await Order.aggregate([
-      { $match: { orderStatus: { $ne: "cancelled" } } },
+      { $match: { status: { $ne: "cancelled" } } },
       { $unwind: "$items" },
       {
         $group: {
@@ -250,8 +251,8 @@ export const getRecentOrders = async (req, res) => {
     const orders = await Order.find()
       .sort({ createdAt: -1 })
       .limit(parseInt(limit))
-      .populate("user", "name email")
-      .select("orderNumber totalAmount orderStatus paymentStatus createdAt");
+      .populate("user", "firstName lastName email")
+      .select("orderNumber total status paymentStatus createdAt");
 
     res.json({
       success: true,
@@ -376,11 +377,11 @@ export const getUserStats = async (req, res) => {
 
     // Top customers
     const topCustomers = await Order.aggregate([
-      { $match: { paymentStatus: "completed" } },
+      { $match: { paymentStatus: "paid" } },
       {
         $group: {
           _id: "$user",
-          totalSpent: { $sum: "$totalAmount" },
+          totalSpent: { $sum: "$total" },
           orderCount: { $sum: 1 },
         },
       },
@@ -399,7 +400,7 @@ export const getUserStats = async (req, res) => {
         $project: {
           _id: 0,
           userId: "$_id",
-          name: "$user.name",
+          name: { $concat: ["$user.firstName", " ", "$user.lastName"] },
           email: "$user.email",
           totalSpent: 1,
           orderCount: 1,
@@ -458,14 +459,14 @@ export const updateOrderStatus = async (req, res) => {
       cancelled: [],
     };
 
-    if (!validTransitions[order.orderStatus]?.includes(status)) {
+    if (!validTransitions[order.status]?.includes(status)) {
       return res.status(400).json({
         success: false,
-        message: `Không thể chuyển từ trạng thái "${order.orderStatus}" sang "${status}"`,
+        message: `Không thể chuyển từ trạng thái "${order.status}" sang "${status}"`,
       });
     }
 
-    order.orderStatus = status;
+    order.status = status;
     if (trackingNumber) order.trackingNumber = trackingNumber;
     if (estimatedDelivery) order.estimatedDelivery = estimatedDelivery;
 
@@ -489,7 +490,7 @@ export const updateOrderStatus = async (req, res) => {
         estimatedDelivery,
       });
     } catch (emailError) {
-      console.log("Email notification skipped:", emailError.message);
+      logger.warn("Email notification skipped", emailError);
     }
 
     res.json({
@@ -498,7 +499,7 @@ export const updateOrderStatus = async (req, res) => {
       data: order,
     });
   } catch (error) {
-    console.error("Update order status error:", error);
+    logger.error("Update order status error", error);
     res.status(500).json({
       success: false,
       message: "Không thể cập nhật trạng thái đơn hàng",
@@ -588,7 +589,7 @@ export const getAllOrders = async (req, res) => {
 
     const query = {};
 
-    if (status) query.orderStatus = status;
+    if (status) query.status = status;
     if (paymentStatus) query.paymentStatus = paymentStatus;
     if (startDate || endDate) {
       query.createdAt = {};
@@ -598,7 +599,8 @@ export const getAllOrders = async (req, res) => {
     if (search) {
       query.$or = [
         { orderNumber: { $regex: search, $options: "i" } },
-        { "shippingAddress.fullName": { $regex: search, $options: "i" } },
+        { "shippingAddress.firstName": { $regex: search, $options: "i" } },
+        { "shippingAddress.lastName": { $regex: search, $options: "i" } },
       ];
     }
 
@@ -606,7 +608,7 @@ export const getAllOrders = async (req, res) => {
       .sort({ [sortBy]: sortOrder === "desc" ? -1 : 1 })
       .skip((page - 1) * limit)
       .limit(parseInt(limit))
-      .populate("user", "name email")
+      .populate("user", "firstName lastName email")
       .select("-items.product"); // Exclude full product details for list view
 
     const total = await Order.countDocuments(query);
@@ -651,7 +653,8 @@ export const getAllUsers = async (req, res) => {
     if (role) query.role = role;
     if (search) {
       query.$or = [
-        { name: { $regex: search, $options: "i" } },
+        { firstName: { $regex: search, $options: "i" } },
+        { lastName: { $regex: search, $options: "i" } },
         { email: { $regex: search, $options: "i" } },
       ];
     }

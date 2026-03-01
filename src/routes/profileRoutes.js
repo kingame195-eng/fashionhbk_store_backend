@@ -2,6 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import { protect } from "../middleware/auth.js";
 import User from "../models/User.js";
+import Product from "../models/Product.js";
+import Cart from "../models/Cart.js";
 import bcrypt from "bcrypt";
 
 const router = express.Router();
@@ -452,6 +454,533 @@ router.patch("/addresses/:id/default", protect, async (req, res) => {
       success: false,
       message: "Failed to set default address. Please try again.",
       code: "SET_DEFAULT_FAILED",
+    });
+  }
+});
+
+// ============================================
+// Account Deletion
+// ============================================
+
+/**
+ * @route   DELETE /api/profile
+ * @desc    Delete user account
+ * @access  Private
+ */
+router.delete("/", protect, async (req, res) => {
+  try {
+    const { password, confirmation } = req.body;
+
+    if (!password || confirmation !== "DELETE") {
+      return res.status(400).json({
+        success: false,
+        message: "Password and confirmation ('DELETE') are required",
+        code: "MISSING_FIELDS",
+      });
+    }
+
+    const user = await User.findById(req.user._id).select("+password");
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        code: "USER_NOT_FOUND",
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Password is incorrect",
+        code: "INVALID_PASSWORD",
+      });
+    }
+
+    // Soft delete - deactivate account
+    user.isActive = false;
+    user.email = `deleted_${user._id}@deleted.com`;
+    await user.save({ validateBeforeSave: false });
+
+    res.json({
+      success: true,
+      message: "Account deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete account error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete account. Please try again.",
+      code: "DELETE_FAILED",
+    });
+  }
+});
+
+// ============================================
+// Email Update
+// ============================================
+
+/**
+ * @route   PATCH /api/profile/email
+ * @desc    Update user email
+ * @access  Private
+ */
+router.patch("/email", protect, async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required",
+        code: "MISSING_FIELDS",
+      });
+    }
+
+    const user = await User.findById(req.user._id).select("+password");
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        code: "USER_NOT_FOUND",
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Password is incorrect",
+        code: "INVALID_PASSWORD",
+      });
+    }
+
+    // Check if email already taken
+    const existing = await User.findOne({ email, _id: { $ne: user._id } });
+    if (existing) {
+      return res.status(409).json({
+        success: false,
+        message: "This email is already in use",
+        code: "EMAIL_EXISTS",
+      });
+    }
+
+    user.email = email;
+    user.emailVerified = false;
+    await user.save({ validateBeforeSave: false });
+
+    res.json({
+      success: true,
+      message: "Email updated successfully",
+      data: { email: user.email },
+    });
+  } catch (error) {
+    console.error("Update email error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update email. Please try again.",
+      code: "EMAIL_UPDATE_FAILED",
+    });
+  }
+});
+
+// ============================================
+// Preferences
+// ============================================
+
+/**
+ * @route   PATCH /api/profile/preferences
+ * @desc    Update user preferences
+ * @access  Private
+ */
+router.patch("/preferences", protect, async (req, res) => {
+  try {
+    const { newsletter, notifications, language, currency } = req.body;
+
+    const updateData = {};
+    if (newsletter !== undefined) updateData["preferences.newsletter"] = newsletter;
+    if (notifications !== undefined) updateData["preferences.notifications"] = notifications;
+    if (language !== undefined) updateData["preferences.language"] = language;
+    if (currency !== undefined) updateData["preferences.currency"] = currency;
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    ).select("preferences");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        code: "USER_NOT_FOUND",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Preferences updated successfully",
+      data: { preferences: user.preferences },
+    });
+  } catch (error) {
+    console.error("Update preferences error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update preferences. Please try again.",
+      code: "UPDATE_FAILED",
+    });
+  }
+});
+
+// ============================================
+// Avatar
+// ============================================
+
+/**
+ * @route   POST /api/profile/avatar
+ * @desc    Upload user avatar (accepts base64 or URL for now)
+ * @access  Private
+ */
+router.post("/avatar", protect, async (req, res) => {
+  try {
+    // For a full implementation, use multer for file uploads
+    // This simplified version accepts a URL or base64 string
+    const { avatar } = req.body;
+
+    if (!avatar) {
+      return res.status(400).json({
+        success: false,
+        message: "Avatar data is required",
+        code: "MISSING_FIELD",
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { $set: { avatar } },
+      { new: true }
+    ).select("avatar");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        code: "USER_NOT_FOUND",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Avatar uploaded successfully",
+      data: { avatar: user.avatar },
+    });
+  } catch (error) {
+    console.error("Upload avatar error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to upload avatar. Please try again.",
+      code: "UPLOAD_FAILED",
+    });
+  }
+});
+
+/**
+ * @route   DELETE /api/profile/avatar
+ * @desc    Delete user avatar
+ * @access  Private
+ */
+router.delete("/avatar", protect, async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { $unset: { avatar: 1 } },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        code: "USER_NOT_FOUND",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Avatar deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete avatar error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete avatar. Please try again.",
+      code: "DELETE_FAILED",
+    });
+  }
+});
+
+// ============================================
+// Profile Wishlist Routes
+// ============================================
+
+/**
+ * @route   GET /api/profile/wishlist
+ * @desc    Get user wishlist
+ * @access  Private
+ */
+router.get("/wishlist", protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id)
+      .select("wishlist")
+      .populate({
+        path: "wishlist",
+        select: "name slug price compareAtPrice thumbnail ratings category isActive",
+        match: { isActive: true },
+      });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        code: "USER_NOT_FOUND",
+      });
+    }
+
+    // Filter out nulls (products that were deactivated)
+    const wishlist = (user.wishlist || []).filter(Boolean);
+
+    res.json({
+      success: true,
+      data: { wishlist, total: wishlist.length },
+    });
+  } catch (error) {
+    console.error("Get wishlist error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+      code: "SERVER_ERROR",
+    });
+  }
+});
+
+/**
+ * @route   POST /api/profile/wishlist
+ * @desc    Add product to wishlist
+ * @access  Private
+ */
+router.post("/wishlist", protect, async (req, res) => {
+  try {
+    const { productId } = req.body;
+
+    if (!productId || !mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid product ID is required",
+        code: "INVALID_PRODUCT_ID",
+      });
+    }
+
+    const product = await Product.findById(productId);
+    if (!product || !product.isActive) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+        code: "PRODUCT_NOT_FOUND",
+      });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        code: "USER_NOT_FOUND",
+      });
+    }
+
+    // Check if already in wishlist
+    if (user.wishlist.some((id) => id.toString() === productId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Product already in wishlist",
+        code: "ALREADY_IN_WISHLIST",
+      });
+    }
+
+    user.wishlist.push(productId);
+    await user.save({ validateBeforeSave: false });
+
+    res.status(201).json({
+      success: true,
+      message: "Product added to wishlist",
+      data: { wishlist: user.wishlist },
+    });
+  } catch (error) {
+    console.error("Add to wishlist error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to add to wishlist. Please try again.",
+      code: "ADD_FAILED",
+    });
+  }
+});
+
+/**
+ * @route   DELETE /api/profile/wishlist/:productId
+ * @desc    Remove product from wishlist
+ * @access  Private
+ */
+router.delete("/wishlist/:productId", protect, async (req, res) => {
+  try {
+    const { productId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid product ID format",
+        code: "INVALID_ID",
+      });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        code: "USER_NOT_FOUND",
+      });
+    }
+
+    user.wishlist = user.wishlist.filter((id) => id.toString() !== productId);
+    await user.save({ validateBeforeSave: false });
+
+    res.json({
+      success: true,
+      message: "Product removed from wishlist",
+      data: { wishlist: user.wishlist },
+    });
+  } catch (error) {
+    console.error("Remove from wishlist error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to remove from wishlist. Please try again.",
+      code: "REMOVE_FAILED",
+    });
+  }
+});
+
+/**
+ * @route   GET /api/profile/wishlist/check/:productId
+ * @desc    Check if product is in wishlist
+ * @access  Private
+ */
+router.get("/wishlist/check/:productId", protect, async (req, res) => {
+  try {
+    const { productId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid product ID format",
+        code: "INVALID_ID",
+      });
+    }
+
+    const user = await User.findById(req.user._id).select("wishlist");
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        code: "USER_NOT_FOUND",
+      });
+    }
+
+    const inWishlist = user.wishlist.some((id) => id.toString() === productId);
+
+    res.json({
+      success: true,
+      data: { inWishlist },
+    });
+  } catch (error) {
+    console.error("Check wishlist error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+      code: "SERVER_ERROR",
+    });
+  }
+});
+
+/**
+ * @route   POST /api/profile/wishlist/:productId/move-to-cart
+ * @desc    Move product from wishlist to cart
+ * @access  Private
+ */
+router.post("/wishlist/:productId/move-to-cart", protect, async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const { size, color, quantity = 1 } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid product ID format",
+        code: "INVALID_ID",
+      });
+    }
+
+    const product = await Product.findById(productId);
+    if (!product || !product.isActive) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+        code: "PRODUCT_NOT_FOUND",
+      });
+    }
+
+    // Add to cart
+    let cart = await Cart.findOne({ user: req.user._id });
+    if (!cart) {
+      cart = new Cart({ user: req.user._id, items: [] });
+    }
+
+    const existingIndex = cart.items.findIndex(
+      (item) =>
+        item.product.toString() === productId &&
+        (item.size || "") === (size || "") &&
+        (item.color || "") === (color || "")
+    );
+
+    if (existingIndex > -1) {
+      cart.items[existingIndex].quantity += quantity;
+    } else {
+      cart.items.push({
+        product: productId,
+        quantity,
+        price: product.price,
+        size,
+        color,
+      });
+    }
+
+    await cart.save();
+
+    // Remove from wishlist
+    const user = await User.findById(req.user._id);
+    user.wishlist = user.wishlist.filter((id) => id.toString() !== productId);
+    await user.save({ validateBeforeSave: false });
+
+    res.json({
+      success: true,
+      message: "Product moved to cart",
+      data: { wishlist: user.wishlist },
+    });
+  } catch (error) {
+    console.error("Move to cart error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to move to cart. Please try again.",
+      code: "MOVE_FAILED",
     });
   }
 });

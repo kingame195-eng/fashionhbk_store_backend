@@ -260,6 +260,31 @@ const productSchema = new mongoose.Schema(
     saleStartDate: Date,
     saleEndDate: Date,
 
+    // Sales tracking
+    sold: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
+    // Stock history for inventory tracking
+    stockHistory: [
+      {
+        oldStock: Number,
+        newStock: Number,
+        adjustment: Number,
+        reason: String,
+        updatedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        updatedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+
     // Admin tracking
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -296,7 +321,24 @@ productSchema.virtual("discountPercentage").get(function () {
 
 // Check if product is in stock
 productSchema.virtual("inStock").get(function () {
-  return this.stock > 0;
+  // Check main stock OR any variant has stock
+  if (this.stock > 0) return true;
+  if (this.sizes?.some((s) => s.stock > 0)) return true;
+  if (this.colors?.some((c) => c.stock > 0)) return true;
+  return false;
+});
+
+// Total stock across all variants
+productSchema.virtual("totalStock").get(function () {
+  return this.stock;
+});
+
+// Sale price (effective price considering sale)
+productSchema.virtual("salePrice").get(function () {
+  if (this.isOnSale && this.compareAtPrice && this.compareAtPrice > this.price) {
+    return this.price; // price is already the sale price
+  }
+  return null; // not on sale
 });
 
 // Check if low stock

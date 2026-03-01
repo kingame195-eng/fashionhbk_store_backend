@@ -109,7 +109,7 @@ export const createPaymentIntent = asyncHandler(async (req, res, next) => {
   // In production, you would integrate with Stripe API here
   const paymentIntent = {
     id: `pi_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    amount: order.totalAmount * 100, // Convert to cents
+    amount: order.total * 100, // Convert to cents
     currency: order.currency?.toLowerCase() || "usd",
     status: "requires_payment_method",
     clientSecret: `${Date.now()}_secret_${Math.random().toString(36).substr(2, 16)}`,
@@ -183,7 +183,7 @@ export const confirmPayment = asyncHandler(async (req, res, next) => {
         template: "payment-confirmed",
         data: {
           orderNumber: order.orderNumber,
-          amount: order.totalAmount,
+          amount: order.total,
           paymentMethod: paymentMethod,
         },
       });
@@ -287,7 +287,7 @@ export const processBankTransfer = asyncHandler(async (req, res, next) => {
         template: "bank-transfer",
         data: {
           orderNumber: order.orderNumber,
-          amount: order.totalAmount,
+          amount: order.total,
           transferReference,
           bankInfo: order.paymentDetails.bankInfo,
           expiresAt: order.paymentDetails.expiresAt,
@@ -311,7 +311,7 @@ export const processBankTransfer = asyncHandler(async (req, res, next) => {
       transferDetails: {
         transferReference,
         bankInfo: order.paymentDetails.bankInfo,
-        amount: order.totalAmount,
+        amount: order.total,
         expiresAt: order.paymentDetails.expiresAt,
       },
     },
@@ -358,7 +358,7 @@ export const verifyBankTransfer = asyncHandler(async (req, res, next) => {
         template: "payment-confirmed",
         data: {
           orderNumber: order.orderNumber,
-          amount: order.totalAmount,
+          amount: order.total,
           paymentMethod: "Bank Transfer",
         },
       });
@@ -390,7 +390,7 @@ export const createVNPayPayment = asyncHandler(async (req, res, next) => {
   // For demo purposes, create a mock VNPay URL
   // In production, you would integrate with VNPay API
   const vnpayUrl = `https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=${
-    order.totalAmount * 100
+    order.total * 100
   }&vnp_OrderInfo=${order.orderNumber}&vnp_TxnRef=${Date.now()}`;
 
   // Update order
@@ -461,7 +461,7 @@ export const vnpayCallback = asyncHandler(async (req, res, next) => {
           template: "payment-confirmed",
           data: {
             orderNumber: order.orderNumber,
-            amount: order.totalAmount,
+            amount: order.total,
             paymentMethod: "VNPay",
           },
         });
@@ -495,7 +495,7 @@ export const vnpayCallback = asyncHandler(async (req, res, next) => {
  */
 export const getPaymentStatus = asyncHandler(async (req, res, next) => {
   const order = await Order.findById(req.params.orderId).select(
-    "orderNumber paymentStatus paymentMethod paymentDetails totalAmount"
+    "orderNumber paymentStatus paymentMethod paymentDetails total"
   );
 
   if (!order) {
@@ -508,7 +508,7 @@ export const getPaymentStatus = asyncHandler(async (req, res, next) => {
       orderNumber: order.orderNumber,
       paymentStatus: order.paymentStatus,
       paymentMethod: order.paymentMethod,
-      amount: order.totalAmount,
+      amount: order.total,
       paidAt: order.paymentDetails?.paidAt,
     },
   });
@@ -603,7 +603,7 @@ export const processRefund = asyncHandler(async (req, res, next) => {
         template: approved ? "refund-approved" : "refund-rejected",
         data: {
           orderNumber: order.orderNumber,
-          amount: order.totalAmount,
+          amount: order.total,
           adminNotes,
         },
       });

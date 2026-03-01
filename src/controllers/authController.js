@@ -2,7 +2,7 @@ import User from "../models/User.js";
 import { generateTokenPair, verifyRefreshToken } from "../services/tokenService.js";
 import { asyncHandler } from "../middleware/errorHandler.js";
 import crypto from "crypto";
-import { sendPasswordResetEmail } from "../utils/emailService.js";
+import { sendPasswordResetEmail, sendWelcomeEmail } from "../utils/emailService.js";
 
 // Cookie options for tokens
 // Note: In production with different domains, sameSite must be 'none' with secure=true
@@ -22,7 +22,6 @@ const cookieOptions = {
  */
 
 export const register = asyncHandler(async (req, res, next) => {
-  console.log("Register route handler called");
   const { firstName, lastName, email, password } = req.body;
 
   // Check if user already exists
@@ -52,6 +51,13 @@ export const register = asyncHandler(async (req, res, next) => {
 
   // Set refresh token in cookie
   res.cookie("refreshToken", refreshToken, cookieOptions);
+
+  // Send welcome email (non-blocking)
+  try {
+    await sendWelcomeEmail(user.email, user.firstName);
+  } catch (emailError) {
+    console.error("Welcome email failed (non-critical):", emailError);
+  }
 
   res.status(201).json({
     success: true,
@@ -322,11 +328,20 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
     });
   }
 
-  if (password.length < 6) {
+  if (password.length < 8) {
     return res.status(400).json({
       success: false,
-      message: "Password must be at least 6 characters long.",
+      message: "Password must be at least 8 characters long.",
       code: "PASSWORD_TOO_SHORT",
+    });
+  }
+
+  if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+    return res.status(400).json({
+      success: false,
+      message:
+        "Password must contain at least one uppercase letter, one lowercase letter, and one number.",
+      code: "PASSWORD_WEAK",
     });
   }
 
@@ -367,5 +382,36 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
       user: user.toJSON(),
       accessToken,
     },
+  });
+});
+
+/**
+ * Verify email address
+ * GET /api/auth/verify-email/:token
+ */
+export const verifyEmail = asyncHandler(async (req, res, next) => {
+  const hashedToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
+
+  const user = await User.findOne({
+    emailVerificationToken: hashedToken,
+    emailVerificationExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid or expired verification token.",
+      code: "INVALID_TOKEN",
+    });
+  }
+
+  user.emailVerified = true;
+  user.emailVerificationToken = undefined;
+  user.emailVerificationExpires = undefined;
+  await user.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    success: true,
+    message: "Email verified successfully.",
   });
 });

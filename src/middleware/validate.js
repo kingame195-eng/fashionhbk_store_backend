@@ -138,3 +138,148 @@ export const validatePagination = [
 
   handleValidationErrors,
 ];
+
+/**
+ * Checkout Validation Rules
+ */
+export const validateCheckoutInitialize = [
+  body("cartId").optional().isMongoId().withMessage("Invalid cart ID format"),
+
+  handleValidationErrors,
+];
+
+export const validateShippingAddress = [
+  body("shippingAddress.firstName")
+    .trim()
+    .notEmpty()
+    .withMessage("First name is required")
+    .isLength({ min: 2, max: 50 })
+    .withMessage("First name must be 2-50 characters"),
+
+  body("shippingAddress.lastName")
+    .trim()
+    .notEmpty()
+    .withMessage("Last name is required")
+    .isLength({ min: 2, max: 50 })
+    .withMessage("Last name must be 2-50 characters"),
+
+  body("shippingAddress.phone")
+    .trim()
+    .notEmpty()
+    .withMessage("Phone number is required")
+    .matches(/^[0-9+\-\s()]{8,20}$/)
+    .withMessage("Invalid phone number format"),
+
+  body("shippingAddress.address")
+    .trim()
+    .notEmpty()
+    .withMessage("Address is required")
+    .isLength({ max: 200 })
+    .withMessage("Address too long"),
+
+  body("shippingAddress.city")
+    .trim()
+    .notEmpty()
+    .withMessage("City is required")
+    .isLength({ max: 100 })
+    .withMessage("City name too long"),
+
+  body("shippingAddress.state").trim().notEmpty().withMessage("State/Province is required"),
+
+  body("shippingAddress.postalCode")
+    .trim()
+    .notEmpty()
+    .withMessage("Postal code is required")
+    .isLength({ max: 20 })
+    .withMessage("Postal code too long"),
+
+  body("shippingAddress.country").trim().notEmpty().withMessage("Country is required"),
+
+  handleValidationErrors,
+];
+
+export const validateCompleteCheckout = [
+  body("paymentMethod")
+    .trim()
+    .notEmpty()
+    .withMessage("Payment method is required")
+    .isIn(["cod", "bank_transfer", "stripe", "vnpay"])
+    .withMessage("Invalid payment method"),
+
+  body("shippingAddress").notEmpty().withMessage("Shipping address is required"),
+
+  body("shippingAddress.firstName").trim().notEmpty().withMessage("First name is required"),
+
+  body("shippingAddress.lastName").trim().notEmpty().withMessage("Last name is required"),
+
+  body("shippingAddress.phone").trim().notEmpty().withMessage("Phone number is required"),
+
+  body("shippingAddress.address").trim().notEmpty().withMessage("Address is required"),
+
+  body("shippingAddress.city").trim().notEmpty().withMessage("City is required"),
+
+  handleValidationErrors,
+];
+
+export const validateCouponCode = [
+  body("code")
+    .trim()
+    .notEmpty()
+    .withMessage("Coupon code is required")
+    .isLength({ min: 3, max: 50 })
+    .withMessage("Invalid coupon code length")
+    .matches(/^[A-Za-z0-9_-]+$/)
+    .withMessage("Coupon code contains invalid characters"),
+
+  handleValidationErrors,
+];
+
+/**
+ * Order Validation Rules
+ */
+export const validateCreateOrder = [
+  body("items").isArray({ min: 1 }).withMessage("Order must contain at least one item"),
+
+  body("items.*.product")
+    .notEmpty()
+    .withMessage("Product ID is required")
+    .isMongoId()
+    .withMessage("Invalid product ID"),
+
+  body("items.*.quantity").isInt({ min: 1 }).withMessage("Quantity must be at least 1"),
+
+  body("shippingAddress").notEmpty().withMessage("Shipping address is required"),
+
+  body("paymentMethod")
+    .trim()
+    .notEmpty()
+    .withMessage("Payment method is required")
+    .isIn(["cod", "bank_transfer", "stripe", "vnpay"])
+    .withMessage("Invalid payment method"),
+
+  handleValidationErrors,
+];
+
+export const validateOrderStatus = [
+  body("status")
+    .trim()
+    .notEmpty()
+    .withMessage("Status is required")
+    .isIn(["pending", "confirmed", "processing", "shipped", "delivered", "cancelled", "refunded"])
+    .withMessage("Invalid order status"),
+
+  handleValidationErrors,
+];
+
+export const validateOrderReturn = [
+  body("reason")
+    .trim()
+    .notEmpty()
+    .withMessage("Return reason is required")
+    .isLength({ min: 10, max: 500 })
+    .withMessage("Reason must be 10-500 characters"),
+
+  body("items").optional().isArray().withMessage("Items must be an array"),
+
+  handleValidationErrors,
+];
